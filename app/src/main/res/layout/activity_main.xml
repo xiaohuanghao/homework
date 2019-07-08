@@ -8,6 +8,7 @@ android:orientation="vertical" >
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1" />
+
     <!--底部的RadioGroup-->
     <RadioGroup
         android:id="@+id/rg_main"
@@ -20,7 +21,8 @@ android:orientation="vertical" >
     <RadioButton
         android:id="@+id/rb_map"
         style="@style/bottom_tag_style"
-        android:text="地图" />
+        android:text="地图"
+        />
 
     <RadioButton
         android:id="@+id/rb_collect"
