@@ -7,8 +7,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.MapView;
+import com.demo.prose.fragement.BasicMapFragment;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private RadioGroup mRg_main;
@@ -30,7 +29,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.rb_map:
-                startActivity(new Intent(this, BasicMap.class));
+                startActivity(new Intent(this, BasicMapFragment.class));
                 break;
 
             case R.id.rb_collect:
