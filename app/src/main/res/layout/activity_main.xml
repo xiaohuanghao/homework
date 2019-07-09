@@ -17,26 +17,29 @@ android:orientation="vertical" >
         android:background="#0066FF"
         android:gravity="center_vertical"
         android:orientation="horizontal"
-        android:padding="10dp">
+        android:padding="15dp">
     <RadioButton
         android:id="@+id/rb_map"
         style="@style/bottom_tag_style"
         android:text="地图"
-        />
+        android:textSize="20sp"/>
 
     <RadioButton
         android:id="@+id/rb_collect"
         style="@style/bottom_tag_style"
-        android:text="采集" />
+        android:text="采集"
+        android:textSize="20sp"/>
 
     <RadioButton
         android:id="@+id/rb_news"
         style="@style/bottom_tag_style"
-        android:text="新闻" />
+        android:text="新闻"
+        android:textSize="20sp"/>
 <RadioButton
     android:id="@+id/rb_other"
     style="@style/bottom_tag_style"
-    android:text="其他" />
+    android:text="其他"
+    android:textSize="20sp"/>
 
     </RadioGroup>
 </LinearLayout>

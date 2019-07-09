@@ -1,5 +1,6 @@
 package com.demo.prose.base;
 
+import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -14,11 +15,11 @@ import androidx.fragment.app.Fragment;
  */
 public abstract class BaseFragment extends Fragment {
     /*上下文*/
-   protected Context mcontext;
+   protected Context mContext;
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mcontext=getActivity();
+        mContext=getActivity();
     }
 
     @Nullable

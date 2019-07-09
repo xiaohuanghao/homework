@@ -19,7 +19,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".fragement.BasicMapFragment"></activity>
+        <activity android:name=".fragement.MapaFragment"></activity>
 
         <meta-data
             android:name="com.amap.api.v2.apikey"
