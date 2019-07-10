@@ -1,4 +1,4 @@
-package com.demo.prose.fragement;
+package com.demo.prose.fragment;
 
 import android.view.View;
 
@@ -9,4 +9,6 @@ public class OtherFragment extends BaseFragment {
     protected View initView() {
         return null;
     }
+
+
 }

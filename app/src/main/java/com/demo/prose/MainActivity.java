@@ -1,25 +1,30 @@
 package com.demo.prose;
 
-import androidx.appcompat.app.AppCompatActivity;
+
+import androidx.fragment.app.FragmentActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import com.amap.api.maps2d.MapFragment;
 import com.demo.prose.base.BaseFragment;
-import com.demo.prose.fragement.CollectFragment;
-import com.demo.prose.fragement.MapaFragment;
-import com.demo.prose.fragement.NewsFragment;
-import com.demo.prose.fragement.OtherFragment;
+import com.demo.prose.fragment.CollectFragment;
+import com.demo.prose.fragment.MapaFragment;
+import com.demo.prose.fragment.NewsFragment;
+import com.demo.prose.fragment.OtherFragment;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener {
+public class MainActivity extends FragmentActivity {
     private RadioGroup mRg_main;
-    private List<BaseFragment > mBaseFragment;
+    private List<BaseFragment> mBaseFragment;
+
+    private int position;
+    private BaseFragment mContent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -28,12 +33,98 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         initView();
         //初始化initFragment
         initFragment();
+        setListner();
+    }
 
+    private void setListner() {
+        mRg_main.setOnCheckedChangeListener(new MyOnCheckedChangeListener());
+        mRg_main.check(R.id.rb_map);
+    }
+
+    class MyOnCheckedChangeListener implements RadioGroup.OnCheckedChangeListener {
+
+        @Override
+        public void onCheckedChanged(RadioGroup radioGroup, int checkedId) {
+
+            switch (checkedId) {
+                case R.id.rb_map:
+                    position = 1;
+                    break;
+
+                case R.id.rb_collect:
+                    position = 2;
+                    break;
+
+                case R.id.rb_news:
+                    position = 0;
+                    break;
+
+                case R.id.rb_other:
+                    position = 3;
+                    break;
+
+                default:
+                    position = 0;
+                    break;
+            }
+            BaseFragment to = getFragment();
+            switchFragment(mContent,to);
+        }
 
     }
 
+    /**
+     *  @param from 刚显示的Fragment,马上就要被隐藏了
+     * @param to 马上要切换到的Fragment，一会要显示*/
+    private void switchFragment(BaseFragment from, BaseFragment to) {
+        if(from != to){
+            mContent = to;
+            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+            //才切换
+            //判断有没有被添加
+            if(!to.isAdded()){
+                //to没有被添加
+                //from隐藏
+                if(from != null){
+                    ft.hide(from);
+                }
+                //添加to
+                if(to != null){
+                    ft.add(R.id.fl_content,to).commit();
+                }
+            }else{
+                //to已经被添加
+                // from隐藏
+                if(from != null){
+                    ft.hide(from);
+                }
+                //显示to
+                if(to != null){
+                    ft.show(to).commit();
+                }
+            }
+        }
+
+    }
+
+ private void switchFragment(BaseFragment fragment) {
+        //1.得到FragmentManger
+        FragmentManager fm = getSupportFragmentManager();
+        //2.开启事务
+        FragmentTransaction transaction = fm.beginTransaction();
+        //3.替换
+        transaction.replace(R.id.fl_content, fragment);
+        //4.提交事务
+        transaction.commit();
+    }
+
+    private BaseFragment getFragment() {
+        BaseFragment fragment=mBaseFragment.get(position);
+        return fragment;
+    }
+
     private void initFragment() {
-        mBaseFragment=new ArrayList<>();
+        mBaseFragment = new ArrayList<>();
         mBaseFragment.add(new MapaFragment());
         mBaseFragment.add(new CollectFragment());
         mBaseFragment.add(new NewsFragment());
@@ -42,32 +133,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     private void initView() {
         setContentView(R.layout.activity_main);
-        findViewById(R.id.rb_map).setOnClickListener(this);
-        findViewById(R.id.rb_collect).setOnClickListener(this);
-        findViewById(R.id.rb_news).setOnClickListener(this);
-        findViewById(R.id.rb_other).setOnClickListener(this);
+        mRg_main = (RadioGroup) findViewById(R.id.rg_main);
 
     }
 
-
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.rb_map:
-                startActivity(new Intent(this, MapaFragment.class));
-                break;
-
-            case R.id.rb_collect:
-                break;
-
-            case R.id.rb_news:
-                break;
-
-            case R.id.rb_other:
-                break;
-
-            default:
-                break;
-        }
-    }
 }

@@ -1,6 +1,5 @@
 package com.demo.prose.base;
 
-import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -9,26 +8,33 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.widget.ViewUtils;
 import androidx.fragment.app.Fragment;
+
+import com.demo.prose.R;
+
 /*:
 作用:基类 公共类
  */
 public abstract class BaseFragment extends Fragment {
     /*上下文*/
    protected Context mContext;
+    protected  View view;
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        mContext=getActivity();
+        mContext = getActivity();
     }
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+        View view = inflater.inflate(R.layout.basicmap, container, false);
         return initView();
     }
 /*强制子类重写,实现子类特有的ui*/
    protected abstract View initView();
+
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {

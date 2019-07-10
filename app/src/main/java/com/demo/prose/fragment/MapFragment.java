@@ -1,4 +1,4 @@
-package com.demo.prose.fragement;
+package com.demo.prose.fragment;
 
 
 import android.os.Bundle;
