@@ -48,15 +48,15 @@ public class MainActivity extends FragmentActivity {
 
             switch (checkedId) {
                 case R.id.rb_map:
-                    position = 1;
+                    position = 0;
                     break;
 
                 case R.id.rb_collect:
-                    position = 2;
+                    position = 1;
                     break;
 
                 case R.id.rb_news:
-                    position = 0;
+                    position = 2;
                     break;
 
                 case R.id.rb_other:

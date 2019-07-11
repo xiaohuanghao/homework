@@ -8,7 +8,6 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.widget.ViewUtils;
 import androidx.fragment.app.Fragment;
 
 import com.demo.prose.R;
@@ -20,6 +19,7 @@ public abstract class BaseFragment extends Fragment {
     /*上下文*/
    protected Context mContext;
     protected  View view;
+    protected Bundle savedInstanceState;
     @Override
     public void onCreate( Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -29,7 +29,6 @@ public abstract class BaseFragment extends Fragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View view = inflater.inflate(R.layout.basicmap, container, false);
         return initView();
     }
 /*强制子类重写,实现子类特有的ui*/

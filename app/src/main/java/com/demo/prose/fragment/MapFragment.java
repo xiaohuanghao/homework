@@ -16,14 +16,14 @@ import com.amap.api.maps2d.MapView;
 import com.demo.prose.R;
 
 public class MapFragment extends Fragment {
+    private static MapFragment fragment=null;
+    public static final int POSITION=0;
 
-       private static MapFragment fragment=null;
-  public static final int POSITION=0;
-   private MapView mapView;
- private AMap aMap;
-   private View mapLayout;
+    private MapView mapView;
+    private AMap aMap;
+    private View mapLayout;
 
-            public static Fragment newInstance(){
+     public static Fragment newInstance(){
             if(fragment==null){
                    synchronized(MapFragment.class){
                         if(fragment==null){
@@ -52,7 +52,7 @@ public class MapFragment extends Fragment {
              return mapLayout;
            }
 
-         /*   @Override
+       /*  @Override
     public void onAttach(Activity activity) {
              super.onAttach(activity);
             ((MainActivity) activity).onSectionAttached(SyncStateContract.Constants.MAP_FRAGMENT);

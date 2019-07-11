@@ -9,25 +9,10 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent" />
 
-    <RadioGroup
-        android:id="@+id/check_language"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/border_bg"
-        android:paddingRight="4dp"
-        android:orientation="vertical">
-
-
-
-
-
-    </RadioGroup>
-
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:layout_toRightOf="@id/check_language"
         android:layout_margin="10dp"
         android:layout_alignTop="@id/map">
 

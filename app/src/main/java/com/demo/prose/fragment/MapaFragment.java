@@ -2,9 +2,9 @@ package com.demo.prose.fragment;
 
 import android.os.Bundle;
 import android.view.View;
+import android.widget.Button;
+import android.widget.RadioGroup;
 
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
@@ -13,21 +13,31 @@ import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 
 
-
-
 public class MapaFragment extends BaseFragment {
 
     private CommonFrameFragmentAdapter adapter;
-
-    MapView mMapView = null;
+    private MapView mapView;
     private AMap aMap;
+
     @Override
     protected View initView() {
 
         View view = View.inflate(mContext, R.layout.basicmap_fragment, null);
+        mapView = view.findViewById(R.id.map);
+        mapView.onCreate(savedInstanceState);
+        if (aMap == null) {
+            aMap = mapView.getMap();
+            aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 卫星地图模式
+        }
         return view;
 
 
+    }
+
+    /**
+     * 初始化AMap对象
+     */
+    private void init() {
     }
     @Override
     protected void initData() {
@@ -35,8 +45,28 @@ public class MapaFragment extends BaseFragment {
     }
 
 }
+   /*
+   private AMap mMap;
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		setContentView(R.layout.basemap_fragment_activity);
+		setUpMapIfNeeded();
+	}
 
-   /* @Override
+	@Override
+	protected void onResume() {
+		super.onResume();
+		setUpMapIfNeeded();
+	}
+
+	private void setUpMapIfNeeded() {
+		if (mMap == null) {
+			mMap = ((SupportMapFragment) getSupportFragmentManager()
+					.findFragmentById(R.id.map)).getMap();
+		}
+	}
+   @Override
     public void onResume() {
         super.onResume();
         mapView.onResume();
