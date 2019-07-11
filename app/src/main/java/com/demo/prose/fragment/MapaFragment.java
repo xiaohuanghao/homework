@@ -3,14 +3,17 @@ package com.demo.prose.fragment;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ListAdapter;
 import android.widget.RadioGroup;
 
 
 import com.amap.api.maps2d.AMap;
 import com.amap.api.maps2d.MapView;
+import com.amap.api.maps2d.MapsInitializer;
 import com.demo.prose.R;
 import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
+import com.demo.prose.location.CustomLocationActivity;
 
 
 public class MapaFragment extends BaseFragment {
@@ -29,10 +32,11 @@ public class MapaFragment extends BaseFragment {
             aMap = mapView.getMap();
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 卫星地图模式
         }
+
         return view;
 
-
     }
+
 
     /**
      * 初始化AMap对象
@@ -42,6 +46,16 @@ public class MapaFragment extends BaseFragment {
     @Override
     protected void initData() {
         super.initData();
+    }
+
+
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
     }
 
 }
