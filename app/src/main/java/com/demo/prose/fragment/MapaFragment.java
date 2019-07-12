@@ -8,6 +8,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 
@@ -17,32 +18,32 @@ import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.model.BitmapDescriptor;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.Circle;
-import com.amap.api.maps2d.model.CircleOptions;
-import com.amap.api.maps2d.model.LatLng;
-import com.amap.api.maps2d.model.Marker;
-import com.amap.api.maps2d.model.MarkerOptions;
-import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptor;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.Circle;
+import com.amap.api.maps.model.LatLng;
+import com.amap.api.maps.model.Marker;
+import com.amap.api.maps.model.MarkerOptions;
+import com.amap.api.maps.model.MyLocationStyle;
 import com.demo.prose.R;
 import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.location.SensorEventHelper;
 
-import java.util.Date;
+
 //声明mlocationClient对象
 
-public class MapaFragment extends BaseFragment implements LocationSource, AMapLocationListener {
+public class MapaFragment extends BaseFragment implements LocationSource, AMapLocationListener, View.OnClickListener {
 
     private CommonFrameFragmentAdapter adapter;
     private MapView mapView;
     private AMap aMap;
-    private OnLocationChangedListener mListener;
+    private LocationSource.OnLocationChangedListener mListener;
+   //定位
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
     private SensorEventHelper mSensorHelper;
@@ -54,6 +55,10 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
     private Circle mCircle;
     public static final String LOCATION_MARKER_FLAG = "mylocation";
+    //点
+    private MarkerOptions markerOption;
+    private LatLng latlng;
+
 
     @Override
     protected View initView() {
@@ -66,9 +71,13 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 卫星地图模式
         }
         setUpMap();
-        init();
+        addMarkersToMap();
+
+
         return view;
     }
+
+
 
     /**
      * 初始化
@@ -81,6 +90,11 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mSensorHelper = new SensorEventHelper(getContext());
         if (mSensorHelper != null) {
             mSensorHelper.registerSensorListener();
+
+            if (aMap == null) {
+                aMap = mapView.getMap();
+                addMarkersToMap();// 往地图上添加marker
+            }
         }
 
 
@@ -96,6 +110,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         // 自定义系统定位小蓝点
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));// 设置小蓝点的图标
+        aMap.setMyLocationStyle( myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER));
         myLocationStyle.strokeColor(Color.BLACK);// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(100, 0, 0, 180));// 设置圆形的填充颜色
         // myLocationStyle.anchor(int,int)//设置小蓝点的锚点
@@ -133,13 +148,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         super.onSaveInstanceState(outState);
         mapView.onSaveInstanceState(outState);
     }
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-        if(null != mlocationClient){
-            mlocationClient.onDestroy();
-        }
-    }
+
     /**
      * 定位成功后回调函数
      */
@@ -148,12 +157,17 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         if (mListener != null && amapLocation != null) {
             if (amapLocation != null
                     && amapLocation.getErrorCode() == 0) {
+                //定位成功回调信息，设置相关消息
+                amapLocation.getLocationType();//获取当前定位结果来源，如网络定位结果，详见定位类型表
+                amapLocation.getLatitude();//获取纬度
+                amapLocation.getLongitude();//获取经度
+                amapLocation.getAccuracy();//获取精度信息
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
 
                 LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
                 if (!mFirstFix) {
                     mFirstFix = true;
-                    addCircle(location, amapLocation.getAccuracy());//添加定位精度圆
+                   //addCircle(location, amapLocation.getAccuracy());//添加定位精度圆(蓝点周围的圈)
                     addMarker(location);//添加定位图标
                     mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
                 } else {
@@ -207,8 +221,8 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mlocationClient = null;
     }
 
-
-    private void addCircle(LatLng latlng, double radius) {
+//蓝点周围的圈
+   /* private void addCircle(LatLng latlng, double radius) {
         CircleOptions options = new CircleOptions();
         options.strokeWidth(1f);
         options.fillColor(FILL_COLOR);
@@ -216,7 +230,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         options.center(latlng);
         options.radius(radius);
         mCircle = aMap.addCircle(options);
-    }
+    }*/
 
     private void addMarker(LatLng latlng) {
         if (mLocMarker != null) {
@@ -234,12 +248,74 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mLocMarker = aMap.addMarker(options);
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
+    private void addMarkersToMap() {
+
+        markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .position(latlng)
+                .draggable(true);
+        aMap.addMarker(markerOption);
+        // 点击事件
+        aMap.setOnMarkerClickListener(new AMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Log.e("TAG", "onMarkerClick:" + marker.getTitle());
+                return false;
+            }
+        });
+
+// 拖拽事件
+        aMap.setOnMarkerDragListener(new AMap.OnMarkerDragListener() {
+            @Override
+            public void onMarkerDragStart(Marker marker) {
+                Log.e("TAG", "onMarkerDragStart:" + marker.getTitle());
+            }
+
+            @Override
+            public void onMarkerDrag(Marker marker) {
+                Log.e("TAG", "onMarkerDrag:" + marker.getTitle());
+            }
+
+            @Override
+            public void onMarkerDragEnd(Marker marker) {
+                Log.e("TAG", "onMarkerDragEnd:" + marker.getTitle());
+            }
+        });
+    }
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+        if(null != mlocationClient){
+            mlocationClient.onDestroy();
+        }
+    }
 
 
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            /**
+             * 清空地图上所有已经标注的marker
+             */
+            case R.id.clearMap:
+                if (aMap != null) {
+                    aMap.clear();
+                }
+                break;
+            /**
+             * 重新标注所有的marker
+             */
+            case R.id.resetMap:
+                if (aMap != null) {
+                    aMap.clear();
+                    addMarkersToMap();
+                }
+                break;
+            default:
+                break;
+        }
 
-
-
-
+    }
 }
    /*
    private AMap mMap;
@@ -250,18 +326,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 		setUpMapIfNeeded();
 	}
 
-	@Override
-	protected void onResume() {
-		super.onResume();
-		setUpMapIfNeeded();
-	}
 
-	private void setUpMapIfNeeded() {
-		if (mMap == null) {
-			mMap = ((SupportMapFragment) getSupportFragmentManager()
-					.findFragmentById(R.id.map)).getMap();
-		}
-	}
    @Override
     public void onResume() {
         super.onResume();

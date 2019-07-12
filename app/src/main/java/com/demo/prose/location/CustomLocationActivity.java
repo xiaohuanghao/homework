@@ -15,13 +15,14 @@ import com.amap.api.location.AMapLocationClient;
 import com.amap.api.location.AMapLocationClientOption;
 import com.amap.api.location.AMapLocationClientOption.AMapLocationMode;
 import com.amap.api.location.AMapLocationListener;
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.CameraUpdateFactory;
-import com.amap.api.maps2d.LocationSource;
-import com.amap.api.maps2d.MapView;
-import com.amap.api.maps2d.model.BitmapDescriptorFactory;
-import com.amap.api.maps2d.model.MyLocationStyle;
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.CameraUpdateFactory;
+import com.amap.api.maps.LocationSource;
 
+
+import com.amap.api.maps.MapView;
+import com.amap.api.maps.model.BitmapDescriptorFactory;
+import com.amap.api.maps.model.MyLocationStyle;
 import com.demo.prose.R;
 
 /**
@@ -152,7 +153,7 @@ public class CustomLocationActivity extends Activity implements LocationSource,
 	 * 激活定位
 	 */
 	@Override
-	public void activate(OnLocationChangedListener listener) {
+	public void activate(LocationSource.OnLocationChangedListener listener) {
 		mListener = listener;
 		if (mlocationClient == null) {
 			mlocationClient = new AMapLocationClient(this);

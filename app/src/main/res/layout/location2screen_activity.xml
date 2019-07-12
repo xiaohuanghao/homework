@@ -128,7 +128,7 @@
             	android:layout_weight="1"
            	 	android:text="屏幕像素坐标转经纬度"/>
         </LinearLayout>
-       <com.amap.api.maps2d.MapView
+       <com.amap.api.maps.MapView
         android:id="@+id/map"
         android:layout_width="match_parent"
         android:layout_height="match_parent" />

@@ -9,7 +9,7 @@ import android.view.Display;
 import android.view.Surface;
 import android.view.WindowManager;
 
-import com.amap.api.maps2d.model.Marker;
+import com.amap.api.maps.model.Marker;
 
 public class SensorEventHelper implements SensorEventListener {
 
@@ -40,6 +40,10 @@ public class SensorEventHelper implements SensorEventListener {
 
 	public void setCurrentMarker(Marker marker) {
 		mMarker = marker;
+	}
+
+	public Marker getCurrentMarker() {
+		return mMarker;
 	}
 
 	@Override

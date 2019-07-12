@@ -10,9 +10,9 @@ import android.view.ViewGroup;
 
 import androidx.fragment.app.Fragment;
 
-import com.amap.api.maps2d.AMap;
-import com.amap.api.maps2d.MapView;
 
+import com.amap.api.maps.AMap;
+import com.amap.api.maps.MapView;
 import com.demo.prose.R;
 
 public class MapFragment extends Fragment {

@@ -7,7 +7,8 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import com.amap.api.maps2d.MapView;
+import com.amap.api.maps.MapView;
+
 
 /**
  * 作者：尚硅谷-杨光福 on 2016/7/21 20:37
