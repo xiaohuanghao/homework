@@ -3,16 +3,19 @@ package com.demo.prose.fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.icu.text.SimpleDateFormat;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.BounceInterpolator;
+import android.view.animation.Interpolator;
 import android.widget.Button;
 import android.widget.TextView;
-
-
-import androidx.annotation.Nullable;
+import android.widget.Toast;
 
 import com.amap.api.location.AMapLocation;
 import com.amap.api.location.AMapLocationClient;
@@ -22,6 +25,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -33,11 +37,12 @@ import com.demo.prose.R;
 import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.location.SensorEventHelper;
+import com.demo.prose.marker.MarkerClickActivity;
 
 
 //声明mlocationClient对象
 
-public class MapaFragment extends BaseFragment implements LocationSource, AMapLocationListener, View.OnClickListener {
+public class MapaFragment extends BaseFragment implements LocationSource, AMapLocationListener, View.OnClickListener, AMap.OnMapClickListener {
 
     private CommonFrameFragmentAdapter adapter;
     private MapView mapView;
@@ -71,9 +76,12 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 卫星地图模式
         }
         setUpMap();
-        addMarkersToMap();
+        addPointToMap();
 
-
+        init();
+        onResume();
+        onPause();
+        deactivate();
         return view;
     }
 
@@ -91,10 +99,11 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         if (mSensorHelper != null) {
             mSensorHelper.registerSensorListener();
 
-            if (aMap == null) {
+           /* if (aMap == null) {
                 aMap = mapView.getMap();
                 addMarkersToMap();// 往地图上添加marker
-            }
+            }*/
+
         }
 
 
@@ -102,7 +111,9 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     @Override
     protected void initData() {
         super.initData();
+
     }
+
     /**
      * 设置一些amap的属性
      */
@@ -142,6 +153,11 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mapView.onPause();
         deactivate();
         mFirstFix = false;
+    }
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -248,6 +264,19 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mLocMarker = aMap.addMarker(options);
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
+
+    /*标绘点*/
+    private void addPointToMap(){
+        aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
+
+                                       @Override
+                                       public void onMapClick(LatLng latLng) {
+
+                                       }
+                                   });
+
+        addMarkersToMap();
+    }
     private void addMarkersToMap() {
 
         markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
@@ -262,8 +291,25 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 Log.e("TAG", "onMarkerClick:" + marker.getTitle());
                 return false;
             }
-        });
+        });}
 
+
+    @Override
+    public void onClick(View view) {
+
+    }
+
+    @Override
+    public void onMapClick(LatLng latLng) {
+
+    }
+
+    /*                                Marker                                          */
+
+
+
+
+/*
 // 拖拽事件
         aMap.setOnMarkerDragListener(new AMap.OnMarkerDragListener() {
             @Override
@@ -282,29 +328,68 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             }
         });
     }
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-        if(null != mlocationClient){
-            mlocationClient.onDestroy();
+*/
+
+    //设置坐标点
+ /*   LatLng point1 = new LatLng(39.92235, 116.380338);
+    LatLng point2 = new LatLng(39.947246, 116.414977);*/
+
+
+    /**
+     * 对marker标注点点击响应事件
+     */
+    /*public boolean onMarkerClick(final Marker marker) {
+        if (aMap != null) {
+            jumpPoint(marker);
         }
+        Toast.makeText(getContext(), "您点击了Marker", Toast.LENGTH_LONG).show();
+        return true;
+    }
+    public void jumpPoint(final Marker marker) {
+        final Handler handler = new Handler();
+        final long start = SystemClock.uptimeMillis();
+        Projection proj = aMap.getProjection();
+        final LatLng markerLatlng = marker.getPosition();
+        Point markerPoint = proj.toScreenLocation(markerLatlng);
+        markerPoint.offset(0, -100);
+        final LatLng startLatLng = proj.fromScreenLocation(markerPoint);
+        final long duration = 1500;
+
+        final Interpolator interpolator = new BounceInterpolator();
+        handler.post(new Runnable() {
+            @Override
+            public void run() {
+                long elapsed = SystemClock.uptimeMillis() - start;
+                float t = interpolator.getInterpolation((float) elapsed
+                        / duration);
+                double lng = t * markerLatlng.longitude + (1 - t)
+                        * startLatLng.longitude;
+                double lat = t * markerLatlng.latitude + (1 - t)
+                        * startLatLng.latitude;
+                marker.setPosition(new LatLng(lat, lng));
+                if (t < 1.0) {
+                    handler.postDelayed(this, 16);
+                }
+            }
+        });
     }
 
 
+    Marker marker;
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
-            /**
+            *//**
              * 清空地图上所有已经标注的marker
-             */
+             *//*
             case R.id.clearMap:
                 if (aMap != null) {
                     aMap.clear();
                 }
                 break;
-            /**
+            *//**
              * 重新标注所有的marker
-             */
+             *//*
             case R.id.resetMap:
                 if (aMap != null) {
                     aMap.clear();
@@ -313,64 +398,10 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 break;
             default:
                 break;
-        }
-
-    }
-}
-   /*
-   private AMap mMap;
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		setContentView(R.layout.basemap_fragment_activity);
-		setUpMapIfNeeded();
-	}
-
-
-   @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-        mapView.onCreate(savedInstanceState);
-
+        }*/
 
     }
 
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }*/
 
-   /* private static MapaFragment fragment = null;
-    public static final int POSITION = 0;
-
-    public static Fragment newInstance() {
-        if (fragment == null) {
-            synchronized (MapaFragment.class) {
-                if (fragment == null) {
-                    fragment = new MapaFragment();
-                }
-            }
-        }
-        return fragment;
-
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
-        MapView mapView = (MapView) view.findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);// 此方法必须重写
-
-    }
-}*/
-
-        /*MapView mapView = (MapView) findViewById(R.id.map);
-        mapView.onCreate(savedInstanceState);// 此方法必须重写
-        AMap aMap = mapView.getMap();*/
 
 
