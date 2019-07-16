@@ -30,7 +30,7 @@ public class CollectFragment extends BaseFragment {
         return view;
 
     }
-    private void bindViews() {
+    private void bindViews() {111
         img_show = (ImageView) findViewById(R.id.img_show);
         btn_start = (Button) findViewById(R.id.btn_start);
         btn_start.setOnClickListener(new View.OnClickListener() {
