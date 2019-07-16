@@ -3,17 +3,9 @@ package com.demo.prose.fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
-import android.graphics.Point;
-import android.icu.text.SimpleDateFormat;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.SystemClock;
 import android.util.Log;
 import android.view.View;
-import android.view.animation.BounceInterpolator;
-import android.view.animation.Interpolator;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -25,7 +17,6 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
-import com.amap.api.maps.Projection;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -38,6 +29,9 @@ import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.location.SensorEventHelper;
 import com.demo.prose.marker.MarkerClickActivity;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 //声明mlocationClient对象
@@ -57,7 +51,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     private boolean mFirstFix = false;
     private Marker mLocMarker;
     private TextView mLocationErrText;
-
+    private List<Marker> markerList = new ArrayList();
     private Circle mCircle;
     public static final String LOCATION_MARKER_FLAG = "mylocation";
     //点
@@ -268,14 +262,17 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     /*标绘点*/
     private void addPointToMap(){
         aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
+         @Override
+         public void onMapClick(LatLng point) {
+             Toast.makeText(getContext(), "onMap被点击了", Toast.LENGTH_SHORT).show();
+             mLocMarker=aMap.addMarker(new MarkerOptions().position(latlng));
+         markerList.add(mLocMarker);
 
-                                       @Override
-                                       public void onMapClick(LatLng latLng) {
 
-                                       }
-                                   });
+             addMarkersToMap(); }
+              });
 
-        addMarkersToMap();
+
     }
     private void addMarkersToMap() {
 
@@ -296,6 +293,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
     @Override
     public void onClick(View view) {
+        Toast.makeText(getContext(), "按钮被点击了", Toast.LENGTH_SHORT).show();
 
     }
 
