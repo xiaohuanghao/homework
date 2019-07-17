@@ -93,10 +93,10 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         if (mSensorHelper != null) {
             mSensorHelper.registerSensorListener();
 
-           /* if (aMap == null) {
+      if (aMap == null) {
                 aMap = mapView.getMap();
-                addMarkersToMap();// 往地图上添加marker
-            }*/
+                addPointToMap();// 往地图上添加marker
+            }
 
         }
 
@@ -115,6 +115,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         // 自定义系统定位小蓝点
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));// 设置小蓝点的图标
+
         aMap.setMyLocationStyle( myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER));
         myLocationStyle.strokeColor(Color.BLACK);// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(100, 0, 0, 180));// 设置圆形的填充颜色
@@ -123,6 +124,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         aMap.setLocationSource(this);// 设置定位监听
         aMap.getUiSettings().setMyLocationButtonEnabled(true);// 设置默认定位按钮是否显示
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
+        Toast.makeText(getContext(), "setUpMap", Toast.LENGTH_SHORT).show();
     }
     /**
      * 方法必须重写
@@ -152,6 +154,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
+        mLocMarker.destroy();
     }
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -173,6 +176,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 amapLocation.getLongitude();//获取经度
                 amapLocation.getAccuracy();//获取精度信息
                 mListener.onLocationChanged(amapLocation);// 显示系统小蓝点
+                Toast.makeText(getContext(), "onLocationChanged", Toast.LENGTH_SHORT).show();
 
                 LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
                 if (!mFirstFix) {
@@ -249,7 +253,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         Bitmap bMap = BitmapFactory.decodeResource(this.getResources(),
                 R.drawable.navi_map_gps_locked);
         BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
-
+        Toast.makeText(getContext(), "addMarker", Toast.LENGTH_SHORT).show();
 //		BitmapDescriptor des = BitmapDescriptorFactory.fromResource(R.drawable.navi_map_gps_locked);
         MarkerOptions options = new MarkerOptions();
         options.icon(des);
@@ -264,12 +268,21 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
          @Override
          public void onMapClick(LatLng point) {
-             Toast.makeText(getContext(), "onMap被点击了", Toast.LENGTH_SHORT).show();
-             mLocMarker=aMap.addMarker(new MarkerOptions().position(latlng));
-         markerList.add(mLocMarker);
-
-
-             addMarkersToMap(); }
+             Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
+             mLocMarker=aMap.addMarker(new MarkerOptions().position(point));
+             markerList.add(mLocMarker);
+             if (mLocMarker != null) {
+                 return;
+             }
+             Bitmap bMap = (Bitmap) BitmapFactory.decodeResource(getContext().getResources(), R.drawable.navi_map_gps_locked);
+             BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
+             MarkerOptions options = new MarkerOptions();
+             options.icon(des);
+             options.anchor(0.5f, 0.5f);
+             options.position(latlng);
+             mLocMarker = aMap.addMarker(options);
+             mLocMarker.setTitle(LOCATION_MARKER_FLAG);
+             }
               });
 
 
@@ -286,21 +299,47 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             @Override
             public boolean onMarkerClick(Marker marker) {
                 Log.e("TAG", "onMarkerClick:" + marker.getTitle());
+                Toast.makeText(getContext(), "addMarkersToMap", Toast.LENGTH_SHORT).show();
                 return false;
             }
         });}
 
 
-    @Override
+   /* @Override
     public void onClick(View view) {
         Toast.makeText(getContext(), "按钮被点击了", Toast.LENGTH_SHORT).show();
 
-    }
+    }*/
 
     @Override
     public void onMapClick(LatLng latLng) {
 
     }
+
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+
+             /*清空地图上所有已经标注的marker*/
+
+            case R.id.clearMap:
+                if (aMap != null) {
+                    aMap.clear();
+                }
+                break;
+
+              /*重新标注所有的marker
+                    */
+            case R.id.resetMap:
+                if (aMap != null) {
+                    aMap.clear();
+                    addMarkersToMap();
+                }
+                break;
+            default:
+                break;
+        }
 
     /*                                Marker                                          */
 
@@ -398,7 +437,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 break;
         }*/
 
-    }
+    }}
 
 
 

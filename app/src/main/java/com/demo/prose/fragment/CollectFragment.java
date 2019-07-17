@@ -17,6 +17,7 @@ import java.io.IOException;
 
 import static android.view.View.inflate;
 
+
 public class CollectFragment extends BaseFragment {
     private ImageView img_show;
     private Button btn_start;
@@ -26,13 +27,17 @@ public class CollectFragment extends BaseFragment {
     @Override
     protected View initView() {
         View view=inflate(mContext, R.layout.collect, null);
+        img_show = (ImageView) view.findViewById(R.id.img_show);
+        btn_start = (Button) view.findViewById(R.id.btn_start);
         bindViews();
         return view;
 
     }
-    private void bindViews() {111
-        img_show = (ImageView) findViewById(R.id.img_show);
-        btn_start = (Button) findViewById(R.id.btn_start);
+    private void bindViews() {
+
+       /* img_show = (ImageView) findViewById(R.id.img_show);
+        btn_start = (Button) findViewById(R.id.btn_start);*/
+
         btn_start.setOnClickListener(new View.OnClickListener() {
 //在按钮点击事件出写上这些东西,这些实在sd卡创建图片文件的
 
