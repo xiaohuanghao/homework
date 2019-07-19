@@ -1,30 +1,31 @@
 package com.demo.prose.collect;
 
+import android.view.View;
 import android.widget.Button;
-import android.widget.ImageView;
+
 
 public class Pictures {
-    private ImageView img_show;
+    private int img_show;
     private Button btn_start;
-
-    public Pictures(ImageView img_show, Button btn_start) {
-        this.img_show = img_show;
-        this.btn_start = btn_start;
-    }
 
     public Pictures() {
     }
 
-    public ImageView getImg_show() {
+    public Pictures(int img_show, Button btn_start) {
+        this.img_show = img_show;
+        this.btn_start = btn_start;
+    }
+
+    public int getImg_show() {
         return img_show;
     }
 
-    public void setImg_show(ImageView img_show) {
+    public void setImg_show(int img_show) {
         this.img_show = img_show;
     }
 
-    public Button getBtn_start() {
-        return btn_start;
+    public View.OnClickListener getBtn_start() {
+        return (View.OnClickListener) btn_start;
     }
 
     public void setBtn_start(Button btn_start) {
