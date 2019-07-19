@@ -33,75 +33,74 @@ public class CollectFragment extends BaseFragment {
     private ImageView img_show;
     private Button btn_start;
     //定义一个保存图片的File变量
-    private File currentImageFile = null;
+    private File currentImageFele = null;
 
-    private ListView lv_main;
+    private ListView listView;
     private List<Pictures> data;
-    private List<Pictures> picturesList = new ArrayList<Pictures>();
 
     @Override
     protected View initView() {
         View view = inflate(mContext, R.layout.collect, null);
+
         img_show = (ImageView) view.findViewById(R.id.img_show);
         btn_start = (Button) view.findViewById(R.id.btn_start);
-        lv_main = (ListView) view.findViewById(R.id.lv_main);
-
         bindViews();
         return view;
+
     }
 
-
     private void bindViews() {
-        /*img_show = (ImageView) view.findViewById(R.id.img_show);
+       /* img_show = (ImageView) view.findViewById(R.id.img_show);
         btn_start = (Button) view.findViewById(R.id.btn_start);*/
-       /* img_show = (ImageView) findViewById(R.id.img_show);
-        btn_start = (Button) findViewById(R.id.btn_start);*/
-        //调用相机拍摄后,存储照片
         btn_start.setOnClickListener(new View.OnClickListener() {
-            //在按钮点击事件出写上这些东西,这些实在sd卡创建图片文件的
+//在按钮点击事件出写上这些东西,这些实在sd卡创建图片文件的
+
             public void onClick(View view) {
                 File dir = new File(Environment.getExternalStorageDirectory(), "pictures");
                 if (dir.exists()) {
                     dir.mkdir();
                 }
-                currentImageFile = new File(dir, System.currentTimeMillis() + ".jpg");
-                if (!currentImageFile.exists()) {
+                currentImageFele = new File(dir, System.currentTimeMillis() + ".jpg");
+                if (!currentImageFele.exists()) {
                     try {
-                        currentImageFile.createNewFile();
+                        currentImageFele.createNewFile();
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
+                it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFele));
                 startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
 
             }
         });
     }
-   //onActivityResult:
+
+    //onActivityResult:
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Activity.DEFAULT_KEYS_DIALER) {
-            img_show.setImageURI(Uri.fromFile(currentImageFile));
+            img_show.setImageURI(Uri.fromFile(currentImageFele));
         }
+
 
     }
 
-    /*@Override
+
+    @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //  setContentView=(R.layout.activity_main);
-        *//*lv_main = view.findViewById(R.id.lv_main);*//*
-
+        //*lv_main = view.findViewById(R.id.lv_main);*//*
+        listView=(ListView) view.findViewById(R.id.collect);//需要把layout改成listview
         //准备数据?
         data = new ArrayList<Pictures>();
         data.add(new Pictures(R.id.img_show, btn_start));
         //baseAdapter创立?l
         PAdapter adapter = new PAdapter();
         //设置Adapter
-        lv_main.setAdapter(adapter);
+        listView.setAdapter(adapter);
     }
 
     class PAdapter extends BaseAdapter {
@@ -137,7 +136,7 @@ public class CollectFragment extends BaseFragment {
             button.setOnClickListener(pictures.getBtn_start());
             return convertView;
         }
-    }*/
-
-
+    }
 }
+
+
