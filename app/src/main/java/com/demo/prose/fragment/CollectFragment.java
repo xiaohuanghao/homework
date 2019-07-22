@@ -30,17 +30,18 @@ https://ask.csdn.net/questions/372517
 * https://www.cnblogs.com/wdht/p/6119487.html
 * */
 public class CollectFragment extends BaseFragment {
+    //item
     private ImageView img_show;
     private Button btn_start;
     //定义一个保存图片的File变量
-    private File currentImageFele = null;
+    private File currentImageFile = null;
 
     private ListView listView;
     private List<Pictures> data;
 
     @Override
     protected View initView() {
-        View view = inflate(mContext, R.layout.collect, null);
+        View view = inflate(mContext, R.layout.collect_item, null);
 
         img_show = (ImageView) view.findViewById(R.id.img_show);
         btn_start = (Button) view.findViewById(R.id.btn_start);
@@ -50,6 +51,7 @@ public class CollectFragment extends BaseFragment {
     }
 
     private void bindViews() {
+        //点击监听,拍摄
        /* img_show = (ImageView) view.findViewById(R.id.img_show);
         btn_start = (Button) view.findViewById(R.id.btn_start);*/
         btn_start.setOnClickListener(new View.OnClickListener() {
@@ -60,17 +62,17 @@ public class CollectFragment extends BaseFragment {
                 if (dir.exists()) {
                     dir.mkdir();
                 }
-                currentImageFele = new File(dir, System.currentTimeMillis() + ".jpg");
-                if (!currentImageFele.exists()) {
+                currentImageFile = new File(dir, System.currentTimeMillis() + ".jpg");
+                if (!currentImageFile.exists()) {
                     try {
-                        currentImageFele.createNewFile();
+                        currentImageFile.createNewFile();
 
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
                 Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFele));
+                it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
                 startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
 
             }
@@ -81,19 +83,16 @@ public class CollectFragment extends BaseFragment {
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Activity.DEFAULT_KEYS_DIALER) {
-            img_show.setImageURI(Uri.fromFile(currentImageFele));
+            img_show.setImageURI(Uri.fromFile(currentImageFile));
         }
-
-
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         //  setContentView=(R.layout.activity_main);
         //*lv_main = view.findViewById(R.id.lv_main);*//*
-        listView=(ListView) view.findViewById(R.id.collect);//需要把layout改成listview
+        listView=(ListView) view.findViewById(R.id.listView);
         //准备数据?
         data = new ArrayList<Pictures>();
         data.add(new Pictures(R.id.img_show, btn_start));
@@ -110,7 +109,7 @@ public class CollectFragment extends BaseFragment {
             Log.e("TAG", "getCount()");
             return data.size();
         }
-
+        //listview
         //返回指定下标对应的数据对象
         @Override
         public Object getItem(int position) {

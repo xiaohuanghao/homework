@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -24,11 +25,15 @@ import com.amap.api.maps.model.LatLng;
 import com.amap.api.maps.model.Marker;
 import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
+import com.amap.api.maps.model.Polyline;
+import com.amap.api.maps.model.PolylineOptions;
+import com.amap.api.services.core.LatLonPoint;
 import com.demo.prose.R;
 import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.location.SensorEventHelper;
 import com.demo.prose.marker.MarkerClickActivity;
+import com.demo.prose.util.AMapUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +47,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     private MapView mapView;
     private AMap aMap;
     private LocationSource.OnLocationChangedListener mListener;
-   //定位
+    //定位
     private AMapLocationClient mlocationClient;
     private AMapLocationClientOption mLocationOption;
     private SensorEventHelper mSensorHelper;
@@ -57,6 +62,13 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     //点
     private MarkerOptions markerOption;
     private LatLng latlng;
+    private Button btn_point;
+    private Button btn_line;
+    //线
+    private Polyline polyline;
+    private PolylineOptions mPolylineOptions;
+    private LatLonPoint mStartPoint;
+    private LatLonPoint mEndPoint ;
 
 
     @Override
@@ -70,7 +82,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             aMap.setMapType(AMap.MAP_TYPE_NORMAL);// 卫星地图模式
         }
         setUpMap();
-        addPointToMap();
+        BPoint();
 
         init();
         onResume();
@@ -78,7 +90,6 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         deactivate();
         return view;
     }
-
 
 
     /**
@@ -93,7 +104,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         if (mSensorHelper != null) {
             mSensorHelper.registerSensorListener();
 
-      if (aMap == null) {
+            if (aMap == null) {
                 aMap = mapView.getMap();
                 addPointToMap();// 往地图上添加marker
             }
@@ -102,6 +113,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
 
     }
+
     @Override
     protected void initData() {
         super.initData();
@@ -116,7 +128,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         MyLocationStyle myLocationStyle = new MyLocationStyle();
         myLocationStyle.myLocationIcon(BitmapDescriptorFactory.fromResource(R.drawable.location_marker));// 设置小蓝点的图标
 
-        aMap.setMyLocationStyle( myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER));
+        aMap.setMyLocationStyle(myLocationStyle.myLocationType(MyLocationStyle.LOCATION_TYPE_FOLLOW_NO_CENTER));
         myLocationStyle.strokeColor(Color.BLACK);// 设置圆形的边框颜色
         myLocationStyle.radiusFillColor(Color.argb(100, 0, 0, 180));// 设置圆形的填充颜色
         // myLocationStyle.anchor(int,int)//设置小蓝点的锚点
@@ -126,17 +138,19 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         aMap.setMyLocationEnabled(true);// 设置为true表示显示定位层并可触发定位，false表示隐藏定位层并不可触发定位，默认是false
         Toast.makeText(getContext(), "setUpMap", Toast.LENGTH_SHORT).show();
     }
+
     /**
      * 方法必须重写
      */
     @Override
-   public void onResume() {
+    public void onResume() {
         super.onResume();
         mapView.onResume();
         if (mSensorHelper != null) {
             mSensorHelper.registerSensorListener();
         }
     }
+
     public void onPause() {
         super.onPause();
         mapView.onPause();
@@ -150,12 +164,14 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         deactivate();
         mFirstFix = false;
     }
+
     @Override
     public void onDestroy() {
         super.onDestroy();
         mapView.onDestroy();
         mLocMarker.destroy();
     }
+
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -181,7 +197,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 LatLng location = new LatLng(amapLocation.getLatitude(), amapLocation.getLongitude());
                 if (!mFirstFix) {
                     mFirstFix = true;
-                   //addCircle(location, amapLocation.getAccuracy());//添加定位精度圆(蓝点周围的圈)
+                    //addCircle(location, amapLocation.getAccuracy());//添加定位精度圆(蓝点周围的圈)
                     addMarker(location);//添加定位图标
                     mSensorHelper.setCurrentMarker(mLocMarker);//定位图标旋转
                 } else {
@@ -191,13 +207,14 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 }
                 aMap.moveCamera(CameraUpdateFactory.newLatLngZoom(location, 18));
             } else {
-                String errText = "定位失败," + amapLocation.getErrorCode()+ ": " + amapLocation.getErrorInfo();
-                Log.e("AmapErr",errText);
+                String errText = "定位失败," + amapLocation.getErrorCode() + ": " + amapLocation.getErrorInfo();
+                Log.e("AmapErr", errText);
                 mLocationErrText.setVisibility(View.VISIBLE);
                 mLocationErrText.setText(errText);
             }
         }
     }
+
     /**
      * 激活定位
      */
@@ -211,7 +228,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             //初始化定位参数
             mLocationOption = new AMapLocationClientOption();
             //设置定位监听
-            mlocationClient.setLocationListener( this);
+            mlocationClient.setLocationListener(this);
             //设置为高精度定位模式
             mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Hight_Accuracy);
             //设置定位参数
@@ -222,7 +239,9 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             // 在单次定位情况下，定位无论成功与否，都无需调用stopLocation()方法移除请求，定位sdk内部会移除
             mlocationClient.startLocation();
         }
-    }/**
+    }
+
+    /**
      * 停止定位
      */
     @Override
@@ -264,29 +283,30 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     }
 
     /*标绘点*/
-    private void addPointToMap(){
+    private void addPointToMap() {
         aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
-         @Override
-         public void onMapClick(LatLng point) {
-             Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
-             mLocMarker=aMap.addMarker(new MarkerOptions().position(point));
-             markerList.add(mLocMarker);
-             if (mLocMarker != null) {
-                 return;
-             }
-             Bitmap bMap = (Bitmap) BitmapFactory.decodeResource(getContext().getResources(), R.drawable.navi_map_gps_locked);
-             BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
-             MarkerOptions options = new MarkerOptions();
-             options.icon(des);
-             options.anchor(0.5f, 0.5f);
-             options.position(latlng);
-             mLocMarker = aMap.addMarker(options);
-             mLocMarker.setTitle(LOCATION_MARKER_FLAG);
-             }
-              });
+            @Override
+            public void onMapClick(LatLng point) {
+                Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
+                mLocMarker = aMap.addMarker(new MarkerOptions().position(point));
+                markerList.add(mLocMarker);
+                if (mLocMarker != null) {
+                    return;
+                }
+                Bitmap bMap = (Bitmap) BitmapFactory.decodeResource(getContext().getResources(), R.drawable.navi_map_gps_locked);
+                BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
+                MarkerOptions options = new MarkerOptions();
+                options.icon(des);
+                options.anchor(0.5f, 0.5f);
+                options.position(latlng);
+                mLocMarker = aMap.addMarker(options);
+                mLocMarker.setTitle(LOCATION_MARKER_FLAG);
+            }
+        });
 
 
     }
+
     private void addMarkersToMap() {
 
         markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
@@ -302,26 +322,20 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 Toast.makeText(getContext(), "addMarkersToMap", Toast.LENGTH_SHORT).show();
                 return false;
             }
-        });}
+        });
+    }
 
-
-   /* @Override
-    public void onClick(View view) {
-        Toast.makeText(getContext(), "按钮被点击了", Toast.LENGTH_SHORT).show();
-
-    }*/
 
     @Override
     public void onMapClick(LatLng latLng) {
 
     }
 
-
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
 
-             /*清空地图上所有已经标注的marker*/
+            /*清空地图上所有已经标注的marker*/
 
             case R.id.clearMap:
                 if (aMap != null) {
@@ -329,8 +343,8 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 }
                 break;
 
-              /*重新标注所有的marker
-                    */
+            /*重新标注所有的marker
+             */
             case R.id.resetMap:
                 if (aMap != null) {
                     aMap.clear();
@@ -340,9 +354,45 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             default:
                 break;
         }
+    }
 
-    /*                                Marker                                          */
+    private void BPoint() {
+        btn_point = (Button) view.findViewById(R.id.btn_point);
+        btn_point.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+            }
+        });
+        addPointToMap();
+
+    }
+    /*                                线                                         */
+    private void addLineToMap() {
+        mPolylineOptions = new PolylineOptions();
+        //polyline=aMap.addPolyline(new PolylineOptions()).
+       /* //起点
+        aMap.addMarker(new MarkerOptions()
+                .position(AMapUtil.convertToLatLng(mStartPoint))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
+        //终点
+        aMap.addMarker(new MarkerOptions()
+                .position(AMapUtil.convertToLatLng(mEndPoint))
+                .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));*/
+
+        aMap.setOnPolylineClickListener(new AMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(Polyline polyline) {
+
+
+            }
+             /*    markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
+                .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
+                .position(latlng)
+                .draggable(true);
+        aMap.addMarker(markerOption);*/
+        });
+    }
 
 
 
@@ -417,16 +467,16 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     public void onClick(View view) {
         switch (view.getId()) {
             *//**
-             * 清空地图上所有已经标注的marker
-             *//*
+     * 清空地图上所有已经标注的marker
+     *//*
             case R.id.clearMap:
                 if (aMap != null) {
                     aMap.clear();
                 }
                 break;
             *//**
-             * 重新标注所有的marker
-             *//*
+     * 重新标注所有的marker
+     *//*
             case R.id.resetMap:
                 if (aMap != null) {
                     aMap.clear();
@@ -437,7 +487,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 break;
         }*/
 
-    }}
+}
 
 
 
