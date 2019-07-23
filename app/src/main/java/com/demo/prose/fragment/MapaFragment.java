@@ -74,7 +74,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     @Override
     protected View initView() {
 
-        View view = View.inflate(mContext, R.layout.basicmap_fragment, null);
+        view = View.inflate(mContext, R.layout.basicmap, null);
         mapView = view.findViewById(R.id.map);
         mapView.onCreate(savedInstanceState);
         if (aMap == null) {
@@ -356,7 +356,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         }
     }
 
-    private void BPoint() {
+private void BPoint() {
         btn_point = (Button) view.findViewById(R.id.btn_point);
         btn_point.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -379,7 +379,14 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         aMap.addMarker(new MarkerOptions()
                 .position(AMapUtil.convertToLatLng(mEndPoint))
                 .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));*/
-
+       /* LatLng A = new LatLng(Lat_A, Lon_A);
+        LatLng B = new LatLng(Lat_B, Lon_B);
+        LatLng C = new LatLng(Lat_C, Lon_C);
+        LatLng D = new LatLng(Lat_D, Lon_D);
+        aMap.addPolyline((new PolylineOptions())
+                .add(A, B, C, D)
+                .width(10)
+                .color(Color.argb(255, 1, 255, 255*/
         aMap.setOnPolylineClickListener(new AMap.OnPolylineClickListener() {
             @Override
             public void onPolylineClick(Polyline polyline) {
@@ -462,13 +469,14 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     }
 
 
+
     Marker marker;
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
             *//**
      * 清空地图上所有已经标注的marker
-     *//*
+                    *//*
             case R.id.clearMap:
                 if (aMap != null) {
                     aMap.clear();
@@ -476,7 +484,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 break;
             *//**
      * 重新标注所有的marker
-     *//*
+                    *//*
             case R.id.resetMap:
                 if (aMap != null) {
                     aMap.clear();
@@ -486,7 +494,6 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
             default:
                 break;
         }*/
-
 }
 
 

@@ -24,8 +24,8 @@ public class Pictures {
         this.img_show = img_show;
     }
 
-    public View.OnClickListener getBtn_start() {
-        return (View.OnClickListener) btn_start;
+    public Button getBtn_start() {
+        return btn_start;
     }
 
     public void setBtn_start(Button btn_start) {
