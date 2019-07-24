@@ -7,8 +7,18 @@
     <ImageView
         android:id="@+id/img_show"
         android:layout_width="100dp"
-        android:layout_height="100dp"
+        android:layout_height="150dp"
         android:layout_weight="0.5" />
+
+    <EditText
+        android:id="@+id/describe"
+        android:layout_width="200dp"
+        android:layout_height="92dp"
+        android:layout_gravity="left"
+        android:gravity="center"
+        android:singleLine="true"
+        android:textColor="#fff"
+        android:textSize="20dp" />
 
       <!-- <LinearLayout
             android:layout_width="wrap_content"
@@ -17,7 +27,7 @@
             android:orientation="vertical"
             android:padding="5dp" >&ndash;&gt;-->
 
-             <Button
+            <!-- <Button
                     android:id="@+id/btn_start"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -29,7 +39,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.5"
-                    android:text="上传" />
+                    android:text="上传" />-->
 
 
     <!--        </LinearLayout>-->

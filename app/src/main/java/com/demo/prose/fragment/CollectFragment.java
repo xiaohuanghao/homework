@@ -12,10 +12,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.demo.prose.R;
+import com.demo.prose.adapter.PAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.collect.Pictures;
 
@@ -34,11 +36,12 @@ public class CollectFragment extends BaseFragment {
     //item
     private ImageView img_show;
     private Button btn_start;
+    private EditText describe;
     //定义一个保存图片的File变量
     private File currentImageFile =null;
 
     private ListView listView;
-    private List<Pictures> data;
+    private List<Pictures> mlist;
 
     @Override
     protected View initView() {
@@ -47,10 +50,11 @@ public class CollectFragment extends BaseFragment {
         bindViews();
         listView=(ListView) view.findViewById(R.id.listView);
         //准备数据?
-        data = new ArrayList<Pictures>();
-        data.add(new Pictures(R.id.img_show, btn_start));
+        mlist = new ArrayList<Pictures>();
+        mlist.add(new Pictures(R.id.img_show,"d" ));
+        List<Pictures>list=new ArrayList<>();
         //baseAdapter创立?l
-        PAdapter adapter = new PAdapter();
+        PAdapter adapter = new PAdapter(list,getContext());
         //设置Adapter
         listView.setAdapter(adapter);
         return view;
@@ -102,7 +106,8 @@ public class CollectFragment extends BaseFragment {
 /*                                adapter                                         */
 
 
-    class PAdapter extends BaseAdapter {
+   /*class PAdapter extends BaseAdapter {
+
         //返回集合数据的数量
         @Override
         public int getCount() {
@@ -131,34 +136,13 @@ public class CollectFragment extends BaseFragment {
             }
             Pictures pictures = data.get(position);
             ImageView imageView = (ImageView) convertView.findViewById(R.id.img_show);
-            Button button = (Button) convertView.findViewById(R.id.btn_start);
+            EditText editText=(EditText)convertView.findViewById(R.id.describe);
             //设置数据
             imageView.setImageResource(pictures.getImg_show());
-            button.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    File dir = new File(Environment.getExternalStorageDirectory(),"pictures");
-                    if(dir.exists()){
-                        dir.mkdirs();
-                    }
-                    currentImageFile = new File(dir,System.currentTimeMillis() + ".jpg");
-                    if(!currentImageFile.exists()){
-                        try {
-                            currentImageFile.createNewFile();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    }
-
-                    Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                    it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-                    startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
-                }
-
-            });
+            editText.setText(getText());
             return convertView;
         }
-    }
+    }*/
 }
 
 

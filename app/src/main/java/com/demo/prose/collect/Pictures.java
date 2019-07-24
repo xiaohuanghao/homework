@@ -2,18 +2,19 @@ package com.demo.prose.collect;
 
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 
 
 public class Pictures {
     private int img_show;
-    private Button btn_start;
+    private EditText describe;
 
-    public Pictures() {
+    public Pictures(int img_show, EditText describe) {
+        this.img_show = img_show;
+        this.describe = describe;
     }
 
-    public Pictures(int img_show, Button btn_start) {
-        this.img_show = img_show;
-        this.btn_start = btn_start;
+    public Pictures() {
     }
 
     public int getImg_show() {
@@ -24,19 +25,19 @@ public class Pictures {
         this.img_show = img_show;
     }
 
-    public Button getBtn_start() {
-        return btn_start;
+    public EditText getDescribe() {
+        return describe;
     }
 
-    public void setBtn_start(Button btn_start) {
-        this.btn_start = btn_start;
+    public void setDescribe(EditText describe) {
+        this.describe = describe;
     }
 
     @Override
     public String toString() {
         return "Pictures{" +
                 "img_show=" + img_show +
-                ", btn_start=" + btn_start +
+                ", describe=" + describe +
                 '}';
     }
 }
