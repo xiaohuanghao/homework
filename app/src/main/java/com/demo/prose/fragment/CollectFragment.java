@@ -9,8 +9,8 @@ import android.provider.ContactsContract;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
+
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -41,7 +41,8 @@ public class CollectFragment extends BaseFragment {
     private File currentImageFile =null;
 
     private ListView listView;
-    private List<Pictures> mlist;
+
+    private Pictures pictures;
 
     @Override
     protected View initView() {
@@ -49,11 +50,15 @@ public class CollectFragment extends BaseFragment {
 
         bindViews();
         listView=(ListView) view.findViewById(R.id.listView);
+
         //准备数据?
-        mlist = new ArrayList<Pictures>();
-        mlist.add(new Pictures(R.id.img_show,"d" ));
-        List<Pictures>list=new ArrayList<>();
-        //baseAdapter创立?l
+       List<Pictures>list=new ArrayList<>();
+       Pictures ptest=new Pictures();
+       for(int i=0;i<50;i++){
+       ptest.setDescribe("第"+i+"项");
+       }
+
+    //baseAdapter创立?l
         PAdapter adapter = new PAdapter(list,getContext());
         //设置Adapter
         listView.setAdapter(adapter);

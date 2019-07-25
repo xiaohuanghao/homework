@@ -7,9 +7,9 @@ import android.widget.EditText;
 
 public class Pictures {
     private int img_show;
-    private EditText describe;
+    private String describe;
 
-    public Pictures(int img_show, EditText describe) {
+    public Pictures(int img_show, String describe) {
         this.img_show = img_show;
         this.describe = describe;
     }
@@ -25,11 +25,11 @@ public class Pictures {
         this.img_show = img_show;
     }
 
-    public EditText getDescribe() {
+    public String getDescribe() {
         return describe;
     }
 
-    public void setDescribe(EditText describe) {
+    public void setDescribe(String describe) {
         this.describe = describe;
     }
 
@@ -37,7 +37,7 @@ public class Pictures {
     public String toString() {
         return "Pictures{" +
                 "img_show=" + img_show +
-                ", describe=" + describe +
+                ", describe='" + describe + '\'' +
                 '}';
     }
 }
