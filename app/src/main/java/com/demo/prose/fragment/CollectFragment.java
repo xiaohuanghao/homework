@@ -3,6 +3,7 @@ package com.demo.prose.fragment;
 import android.app.Activity;
 import android.content.Intent;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
@@ -15,6 +16,8 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
+
+import androidx.core.content.FileProvider;
 
 import com.demo.prose.R;
 import com.demo.prose.adapter.PAdapter;
@@ -76,20 +79,23 @@ public class CollectFragment extends BaseFragment {
             public void onClick(View view) {
                 File dir = new File(Environment.getExternalStorageDirectory(), "pictures");
                 if (dir.exists()) {
-                    dir.mkdir();
+                    dir.delete();
                 }
                 currentImageFile = new File(dir, System.currentTimeMillis() + ".jpg");
                 if (!currentImageFile.exists()) {
                     try {
                         currentImageFile.createNewFile();
-
+                            //拿到照片路径
+                            Uri uriForFile = (Uri) FileProvider.getUriForFile(getContext(), "com.demo.prose.", dir);
+                       //启动相机
+                        Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                        it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
+                        startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
                 }
-                Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-                startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
+
 
             }
         });
