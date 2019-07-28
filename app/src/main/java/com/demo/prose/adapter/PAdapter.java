@@ -25,6 +25,9 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     private Context mContext;
     /*et_test=describe*/
 
+    public PAdapter() {
+    }
+
     public PAdapter(List<Pictures> mlist, Context mContext) {
         this.mContext = mContext;
         this.mlist = mlist;
@@ -71,6 +74,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
             convertView = LayoutInflater.from(mContext).inflate(R.layout.collect_item, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
+            viewHolder.imageView=(ImageView)convertView.findViewById(R.id.)
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }

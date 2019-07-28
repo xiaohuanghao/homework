@@ -2,12 +2,15 @@ package com.demo.prose.fragment;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
 import android.provider.MediaStore;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 
@@ -24,6 +27,7 @@ import com.demo.prose.adapter.PAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.collect.Pictures;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -46,6 +50,9 @@ public class CollectFragment extends BaseFragment {
     private ListView listView;
 
     private Pictures pictures;
+    //https://stackoverflow.com/questions/19229550/listview-shows-recent-image-taken-from-camera?r=SearchResults
+    int take_image;
+    static Bitmap thumbnail;
 
     @Override
     protected View initView() {
@@ -88,9 +95,9 @@ public class CollectFragment extends BaseFragment {
                             //拿到照片路径
                             Uri uriForFile = (Uri) FileProvider.getUriForFile(getContext(), "com.demo.prose.", dir);
                        //启动相机
-                        Intent it = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-                        it.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-                        startActivityForResult(it, Activity.DEFAULT_KEYS_DIALER);
+                        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+                        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
+                        startActivityForResult(it, take_image);
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -106,6 +113,47 @@ public class CollectFragment extends BaseFragment {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         if (requestCode == Activity.DEFAULT_KEYS_DIALER) {
             img_show.setImageURI(Uri.fromFile(currentImageFile));
+
+            if(requestCode==take_image){
+                //get image
+                thumbnail = (Bitmap) data.getExtras().get("data");
+
+
+
+                BitmapFactory.Options factoryOptions = new BitmapFactory.Options();
+
+                factoryOptions.inJustDecodeBounds = true;
+
+
+
+
+                int imageWidth = factoryOptions.inDensity=50;
+                int imageHeight = factoryOptions.inDensity=50;
+
+                image2 = Bitmap.createScaledBitmap(thumbnail, imageWidth , imageHeight, true);
+
+                //////listview work
+
+
+                listviewattachment.setItemsCanFocus(true);
+               adapter = new PAdapter();
+                ListItem listItem = new ListItem();
+                myItems.add(listItem);
+
+                listviewattachment.setAdapter(myAdapter);
+                myAdapter.notifyDataSetChanged();
+
+                ////////////////////end of listview work
+
+                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+
+
+                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
+                //encode image
+                byte[] b = bytes.toByteArray();
+                encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
+
+            }
         }
     }
 
