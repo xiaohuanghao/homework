@@ -74,7 +74,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
             convertView = LayoutInflater.from(mContext).inflate(R.layout.collect_item, null);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
-            viewHolder.imageView=(ImageView)convertView.findViewById(R.id.)
+            /*viewHolder.imageView=(ImageView)convertView.findViewById(R.id.img_show);*/
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
@@ -97,7 +97,13 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
 
         return convertView;
     }
-
+    /*public void updateData(int position,String path){
+        Pictures ptest = mlist.get(position);
+        ptest.setPath(path);
+        ptest.setImageCaptured(true);
+        mlist.set(position,ptest);
+        notifyDataSetChanged();
+    }*/
     private TextWatcher textWatcher = new MyTextWatcher() {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {

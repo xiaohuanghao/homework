@@ -23,13 +23,13 @@
             android:name="com.amap.api.v2.apikey"
             android:value="93a43ab5474d5c934eb83cad408d0d30" />
         <provider
-            android:authorities="com.demo.prose.fileprovider"
+            android:authorities="com.demo.prose."
             android:name="androidx.core.content.FileProvider"
             android:exported="false"
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_path"/>
+                android:resource="@xml/provider_path"></meta-data>
         </provider>
         <activity android:name=".MainActivity">
             <intent-filter>

@@ -7,44 +7,25 @@
 
     <ImageView
         android:id="@+id/img_show"
-        android:layout_width="221dp"
-        android:layout_height="197dp"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_weight="0.5" />
 
-    <EditText
-        android:id="@+id/describe"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:gravity="center"
-        android:singleLine="true"
-        android:textColor="#fff"
-        android:textSize="20dp" />
-
-      <!-- <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="top|right"
-            android:orientation="vertical"
-            android:padding="5dp" >&ndash;&gt;-->
-
-            <!-- <Button
-                    android:id="@+id/btn_start"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="添加" />
-
-                <Button
-                    android:id="@+id/btn_upload"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.5"
-                    android:text="上传" />-->
 
 
-    <!--        </LinearLayout>-->
+        <EditText
+            android:id="@+id/describe"
+            android:layout_width="match_parent"
+            android:layout_height="205dp"
+            android:layout_gravity="left"
+            android:gravity="center"
+            android:singleLine="true"
+            android:textColor="#fff"
+            android:textSize="20dp" />
+
+
+
+
 
 
 </LinearLayout>
-
