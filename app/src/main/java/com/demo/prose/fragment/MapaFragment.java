@@ -3,10 +3,13 @@ package com.demo.prose.fragment;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -18,6 +21,7 @@ import com.amap.api.maps.AMap;
 import com.amap.api.maps.CameraUpdateFactory;
 import com.amap.api.maps.LocationSource;
 import com.amap.api.maps.MapView;
+import com.amap.api.maps.UiSettings;
 import com.amap.api.maps.model.BitmapDescriptor;
 import com.amap.api.maps.model.BitmapDescriptorFactory;
 import com.amap.api.maps.model.Circle;
@@ -27,13 +31,14 @@ import com.amap.api.maps.model.MarkerOptions;
 import com.amap.api.maps.model.MyLocationStyle;
 import com.amap.api.maps.model.Polyline;
 import com.amap.api.maps.model.PolylineOptions;
-import com.amap.api.services.core.LatLonPoint;
 import com.demo.prose.R;
 import com.demo.prose.adapter.CommonFrameFragmentAdapter;
 import com.demo.prose.base.BaseFragment;
 import com.demo.prose.location.SensorEventHelper;
-import com.demo.prose.marker.MarkerClickActivity;
+import com.demo.prose.tool.GeoToScreenActivity;
 import com.demo.prose.util.AMapUtil;
+import com.demo.prose.util.GeometryUtils;
+
 
 import java.util.ArrayList;
 import java.util.List;
@@ -67,10 +72,14 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     //线
     private Polyline polyline;
     private PolylineOptions mPolylineOptions;
-    private LatLonPoint mStartPoint;
-    private LatLonPoint mEndPoint ;
-
-
+    private LatLng latLngStart;
+    private LatLng latLngEnd;
+    private Point mPoint;
+    private LatLng mLatlng;
+    private EditText latView, lngView, xView, yView;
+    private int x, y;
+    UiSettings uiSettings=aMap.getUiSettings();
+     //   UiSettings.setScrollGesturesEnabled(true);
     @Override
     protected View initView() {
 
@@ -84,7 +93,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         setUpMap();
         BPoint();
 
-        init();
+
         onResume();
         onPause();
         deactivate();
@@ -106,7 +115,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
             if (aMap == null) {
                 aMap = mapView.getMap();
-                addPointToMap();// 往地图上添加marker
+                //addPointToMap();// 往地图上添加marker
             }
 
         }
@@ -282,8 +291,8 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         mLocMarker.setTitle(LOCATION_MARKER_FLAG);
     }
 
-    /*标绘点*/
-    private void addPointToMap() {
+    /*标                                  绘                        点                      */
+    /*private void addPointToMap() {
         aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng point) {
@@ -305,10 +314,9 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         });
 
 
-    }
+    }*/
 
     private void addMarkersToMap() {
-
         markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .position(latlng)
@@ -323,6 +331,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 return false;
             }
         });
+
     }
 
 
@@ -356,50 +365,162 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         }
     }
 
-private void BPoint() {
+    private void BPoint() {
         btn_point = (Button) view.findViewById(R.id.btn_point);
         btn_point.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
+                    @Override
+                    public void onMapClick(LatLng point) {
+                        Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
+                        mLocMarker = aMap.addMarker(new MarkerOptions().position(point));
+                        markerList.add(mLocMarker);
+                        if (mLocMarker != null) {
+                            return;
+                        }
+                        Bitmap bMap = (Bitmap) BitmapFactory.decodeResource(getContext().getResources(), R.drawable.navi_map_gps_locked);
+                        BitmapDescriptor des = BitmapDescriptorFactory.fromBitmap(bMap);
+                        MarkerOptions options = new MarkerOptions();
+                        options.icon(des);
+                        options.anchor(0.5f, 0.5f);
+                        options.position(latlng);
+                        mLocMarker = aMap.addMarker(options);
+                        mLocMarker.setTitle(LOCATION_MARKER_FLAG);
+                    }
+                });
+            }
+        });
+
+
+    }
+
+    /*                                线                                         */
+    private void BLine() {
+        btn_line = (Button) view.findViewById(R.id.btn_line);
+        final List<LatLng> mTrackLatlngList = new ArrayList<>();
+
+        btn_point.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                aMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
+                    @Override
+                    public void onTouch(MotionEvent motionEvent) {
+                        if (!aMap.getUiSettings().isScrollGesturesEnabled())
+                        //地图不能移动的时候再画线 gustures 手势
+                        {
+                            switch (motionEvent.getAction()) {
+                                case MotionEvent.ACTION_DOWN://start点，转换成坐标点
+                                    int x = (int) motionEvent.getX();
+                                    int y = (int) motionEvent.getY();
+                                    latLngStart = toGeoLocation(x, y);
+                                    mTrackLatlngList.add(latLngStart);
+                                    break;
+                                case MotionEvent.ACTION_MOVE:
+                                    aMap.showMapText(false);
+                                    int x1 = (int) motionEvent.getX();
+                                    int y1 = (int) motionEvent.getY();
+                                    LatLng latlngMove = toGeoLocation(x1, y1);
+                                    mTrackLatlngList.add(latlngMove);
+                                    if (polyline == null) {
+                                        PolylineOptions mPolylineOptioins = new PolylineOptions().color(Color.RED).addAll(mTrackLatlngList);
+                                        polyline = aMap.addPolyline(mPolylineOptions);
+                                    } else {
+                                        polyline.setPoints(mTrackLatlngList);
+                                    }
+                                    //画线
+                                    break;
+                                case MotionEvent.ACTION_UP:
+                                    //自动首尾相连
+                                    mTrackLatlngList.add(latLngStart);
+                                    btn_line.setVisibility(View.GONE);
+                                    //btn_cancle.setVisibility(View.VISIBLE);
+                                    //isOver=true;
+                                    aMap.showMapText(true);
+                                    uiSettings.setScrollGesturesEnabled(true);
+
+                                    Toast.makeText(getContext(),"绘制完成",Toast.LENGTH_SHORT).show();
+                                    //自动收尾相连
+                                    PolylineOptions polylineOptions1=new PolylineOptions().color(Color.RED).addAll(mTrackLatlngList);
+                                    aMap.addPolyline(polylineOptions1);
+                                    if (polyline!=null){
+                                        polyline.remove();
+                                        polyline=null;
+                                    }
+                                    List<LatLng> list = collectData(mTrackLatlngList);
+                                    double area = Math.abs(GeometryUtils.calculateAreas3(list));
+                                    String areaStr = String.format("%.2f亩", area / 666.6667);
+                                    // 计算中心点
+                                    LatLng midpoint = GeometryUtils.calculateCenterPoint(mTrackLatlngList);
+                                    // 添加面积标签
+                                    addAreaLable(areaStr, midpoint);
+                                    break;
+
+                            }
+
+                        }
+
+                    }
+                });
 
             }
         });
-        addPointToMap();
+    }
+
+
+    private LatLng toGeoLocation(int x, int y) {
+        if (AMapUtil.IsEmptyOrNullString(x + "") || AMapUtil.IsEmptyOrNullString(y + "")) {
+            return null;
+        } else {
+            mPoint = new Point(x, y);
+            LatLng mLatlng = aMap.getProjection().fromScreenLocation(mPoint);
+            if (mLatlng != null) {
+                return mLatlng;
+            }
+            return null;
+
+        }
 
     }
-    /*                                线                                         */
-    private void addLineToMap() {
+}
+
+   /* private void addLineToMap() {
         mPolylineOptions = new PolylineOptions();
-        //polyline=aMap.addPolyline(new PolylineOptions()).
-       /* //起点
-        aMap.addMarker(new MarkerOptions()
-                .position(AMapUtil.convertToLatLng(mStartPoint))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.start)));
-        //终点
-        aMap.addMarker(new MarkerOptions()
-                .position(AMapUtil.convertToLatLng(mEndPoint))
-                .icon(BitmapDescriptorFactory.fromResource(R.drawable.end)));*/
-       /* LatLng A = new LatLng(Lat_A, Lon_A);
-        LatLng B = new LatLng(Lat_B, Lon_B);
-        LatLng C = new LatLng(Lat_C, Lon_C);
-        LatLng D = new LatLng(Lat_D, Lon_D);
-        aMap.addPolyline((new PolylineOptions())
-                .add(A, B, C, D)
-                .width(10)
-                .color(Color.argb(255, 1, 255, 255*/
+
         aMap.setOnPolylineClickListener(new AMap.OnPolylineClickListener() {
             @Override
             public void onPolylineClick(Polyline polyline) {
 
 
-            }
+            }});}
+            public void addPolylineToMap(){
+                mPolylineOptions = new PolylineOptions();
+           aMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
+               @Override
+               public void onTouch(MotionEvent motionEvent) {
+                 }
+           }
+                 );}*/
+
+
+
+
+
+
+
+
+
+
+
+
+
              /*    markerOption = new MarkerOptions().icon(BitmapDescriptorFactory
                 .defaultMarker(BitmapDescriptorFactory.HUE_AZURE))
                 .position(latlng)
                 .draggable(true);
         aMap.addMarker(markerOption);*/
-        });
-    }
+
+
 
 
 
@@ -494,8 +615,4 @@ private void BPoint() {
             default:
                 break;
         }*/
-}
-
-
-
 
