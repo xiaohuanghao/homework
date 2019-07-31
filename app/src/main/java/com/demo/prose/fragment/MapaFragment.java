@@ -447,13 +447,13 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                         polyline.remove();
                                         polyline=null;
                                     }
-                                    List<LatLng> list = collectData(mTrackLatlngList);
+                                    /*List<LatLng> list = collectData(mTrackLatlngList);
                                     double area = Math.abs(GeometryUtils.calculateAreas3(list));
                                     String areaStr = String.format("%.2f亩", area / 666.6667);
                                     // 计算中心点
                                     LatLng midpoint = GeometryUtils.calculateCenterPoint(mTrackLatlngList);
                                     // 添加面积标签
-                                    addAreaLable(areaStr, midpoint);
+                                    addAreaLable(areaStr, midpoint);*/
                                     break;
 
                             }
