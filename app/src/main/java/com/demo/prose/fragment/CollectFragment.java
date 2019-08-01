@@ -2,7 +2,9 @@ package com.demo.prose.fragment;
 
 import android.app.Activity;
 import android.app.LauncherActivity;
+import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -10,154 +12,116 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.MediaStore;
 import android.util.Base64;
 import android.view.View;
-
-import android.widget.Button;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ListView;
 
-import androidx.core.content.FileProvider;
 
 import com.demo.prose.R;
 import com.demo.prose.adapter.PAdapter;
 import com.demo.prose.base.BaseFragment;
-import com.demo.prose.collect.Pictures;
+import com.demo.prose.collect.GetSet;
+
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
 
 import static android.view.View.inflate;
 
 /*
 https://ask.csdn.net/questions/372517
 * https://www.cnblogs.com/wdht/p/6119487.html
+* https://trinitytuts.com/capturing-images-from-camera-and-setting-into-listview-in-android/
 * */
 public class CollectFragment extends BaseFragment {
-    //item
-    private ImageView img_show;
-    private Button btn_start;
-    private EditText describe;
-    //定义一个保存图片的File变量
-    private File currentImageFile = null;
+    PAdapter pAdapter;
+    ArrayList<GetSet> getSets;
+    ListView listView;
 
-    private ListView listView;
-
-    private Pictures pictures;
-    //https://stackoverflow.com/questions/19229550/listview-shows-recent-image-taken-from-camera?r=SearchResults
-    int take_image;
-    static Bitmap thumbnail;
-    Bitmap image2;
-    Uri selectedImage;
-    static ListView listViewAttachment;
-    public ArrayList<LauncherActivity.ListItem> myItems = new ArrayList<LauncherActivity.ListItem>();
-    static String encodedImageString;
-    String attachedImage = encodedImageString;
+    //Temp save listItem position
+    int position;
+    int imageCount;
+    String imageTempName;
+    String[] imageFor;
 
     @Override
     protected View initView() {
-        view = inflate(mContext, R.layout.collect2, null);
+        view=View.inflate(mContext, R.layout.collect,null);
+        listView=(ListView)view.findViewById(R.id.captureList);
 
-        bindViews();
-        listView = (ListView) view.findViewById(R.id.listView);
+        //准备数据
+        getSets = new ArrayList<GetSet>();
+        imageFor = getResources().getStringArray(R.array.imageFor);
+        for (int i = 0; i < 3; i++) {
+            GetSet inflate = new GetSet();
+            //Global Values
+            inflate.setUid(String.valueOf(i));
+            //inflate.setLabel();
+            inflate.setHaveImage(false);
+            inflate.setSubtext(imageFor[i]);
+            inflate.setStatus(true);
 
-        //准备数据?
-        List<Pictures> list = new ArrayList<>();
-        Pictures ptest = new Pictures();
-        for (int i = 0; i < 50; i++) {
-            ptest.setDescribe("第" + i + "项");
+            getSets.add(inflate);
+
         }
+        pAdapter = new PAdapter(getSets, getContext());
+        listView.setAdapter(pAdapter);
 
-        //baseAdapter创立?l
-        PAdapter adapter = new PAdapter(list, getContext());
-        //设置Adapter
-        listView.setAdapter(adapter);
         return view;
+    }
+    /**
+     * Capture Image and save into database
+     */
+
+
+    /**
+     * Set capture image to database and set to image preview
+     *
+     * @param data
+     */
+    private void onCaptureImageResult(Intent data) {
+        Bundle extras = data.getExtras();
+        Bitmap imageBitmap = (Bitmap) extras.get("data");
+        //call this method to get the uri from the bitmap
+        Uri tempUri = getImageUri(getContext(), imageBitmap, imageTempName);
+        String picturePath = getRealPathFromURI(tempUri);
+       pAdapter.setImageInItem(position, imageBitmap, picturePath);
+
 
     }
-
-    private void bindViews() {
-        //点击监听,拍摄
-        img_show = (ImageView) view.findViewById(R.id.img_show);
-        btn_start = (Button) view.findViewById(R.id.btn_start);
-        btn_start.setOnClickListener(new View.OnClickListener() {
-//在按钮点击事件出写上这些东西,这些实在sd卡创建图片文件的
-
-            public void onClick(View view) {
-                File dir = new File(Environment.getExternalStorageDirectory(), "pictures");
-                if (dir.exists()) {
-                    dir.delete();
-                }
-                currentImageFile = new File(dir, System.currentTimeMillis() + ".jpg");
-                if (!currentImageFile.exists()) {
-                    try {
-                        currentImageFile.createNewFile();
-                        //拿到照片路径
-                        Uri uriForFile = (Uri) FileProvider.getUriForFile(getContext(), "com.demo.prose.", dir);
-                        //启动相机
-                        Intent it = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                        it.putExtra(android.provider.MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
-                        startActivityForResult(it, take_image);
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-
-
-            }
-        });
-    }
-
-    //onActivityResult:
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == Activity.DEFAULT_KEYS_DIALER) {
-            img_show.setImageURI(Uri.fromFile(currentImageFile));
-
-            if (requestCode == take_image) {
-                //get image
-                thumbnail = (Bitmap) data.getExtras().get("data");
-                BitmapFactory.Options factoryOptions = new BitmapFactory.Options();
-                factoryOptions.inJustDecodeBounds = true;
-
-                int imageWidth = factoryOptions.inDensity = 50;
-                int imageHeight = factoryOptions.inDensity = 50;
-
-                image2 = Bitmap.createScaledBitmap(thumbnail, imageWidth, imageHeight, true);
-
-                //////listview work
-                listViewAttachment.setItemsCanFocus(true);
-                PAdapter adapter = new PAdapter();
-                LauncherActivity.ListItem listItem = new LauncherActivity.ListItem();
-                myItems.add(listItem);
-
-                listViewAttachment.setAdapter(adapter);
-                adapter.notifyDataSetChanged();
-
-                ////////////////////end of listview work
-
-                ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-
-
-                thumbnail.compress(Bitmap.CompressFormat.JPEG, 100, bytes);
-                //encode image
-                byte[] b = bytes.toByteArray();
-                encodedImageString = Base64.encodeToString(b, Base64.DEFAULT);
-
+        super.onActivityResult(requestCode, resultCode, data);
+        if (resultCode != Activity.RESULT_CANCELED) {
+            if (requestCode == 100) {
+                onCaptureImageResult(data);
             }
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
+    private String getRealPathFromURI(Uri uri) {
+        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        cursor.moveToFirst();
+        int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
+        return cursor.getString(idx);
     }
-
+    public Uri getImageUri(Context inContext, Bitmap inImage, String imageName) {
+        ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+        inImage.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, imageName, null);
+        return Uri.parse(path);
+    }
+    public Bitmap convertSrcToBitMap(String imageSrc){
+        Bitmap myBitmap=null;
+        File imgFile=new File(imageSrc);
+        if(imgFile.exists()){
+            myBitmap= BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        }
+        return myBitmap;
+    }
 }
 
 

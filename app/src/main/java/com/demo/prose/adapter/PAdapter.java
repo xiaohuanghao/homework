@@ -1,48 +1,60 @@
 package com.demo.prose.adapter;
 
 import android.content.Context;
-import android.graphics.Picture;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.provider.MediaStore;
 import android.text.TextWatcher;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.EditText;
+
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.demo.prose.MainActivity;
 import com.demo.prose.R;
-import com.demo.prose.collect.Pictures;
+import com.demo.prose.collect.GetSet;
+import com.demo.prose.fragment.CollectFragment;
 
 import java.util.List;
 
 public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.OnFocusChangeListener, View.OnClickListener, View.OnLongClickListener {
-    private List<Pictures> data;
-    private int selectedEditTextPosition = -1;
-    private List<Pictures> mlist;
-    private Context mContext;
-    /*et_test=describe*/
-
-    public PAdapter() {
-    }
-
-    public PAdapter(List<Pictures> mlist, Context mContext) {
-        this.mContext = mContext;
-        this.mlist = mlist;
-    }
-
+    private List<GetSet> data;
+    private int selectedlabelPosition = -1;
+   Context mContext;
+    ViewHolder v;
 
     static class ViewHolder {
         public ImageView imageView;
-        public EditText editText;
+        public EditText label;
+        ImageButton clickImage, removeImage;
+        Button buttonUpload;
 
-        public ViewHolder(View convertView) {
+       /* public ViewHolder(View convertView) {
             imageView = (ImageView) convertView.findViewById(R.id.img_show);
-            editText = (EditText) convertView.findViewById(R.id.describe);
-        }
+            label = (label) convertView.findViewById(R.id.describe);
+        }*/
     }
+    /*et_test=describe*/
+    public PAdapter() {
+    }
+
+    public PAdapter(List<GetSet> getData, Context mContext) {
+        this.mContext = mContext;
+        this.data = getData;
+    }
+
+
+   
 
     /* public ViewHolder(View convertView){
          image
@@ -51,14 +63,14 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     @Override
     public int getCount() {
         Log.e("TAG", "getCount()");
-        return mlist.size();
+        return data.size();
     }
 
     //listview
     //返回指定下标对应的数据对象
     @Override
     public Object getItem(int position) {
-        return mlist.get(position);
+        return data.get(position);
     }
 
     @Override
@@ -68,50 +80,107 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
 
 
     //返回指定下标所对应的item的view对象
-    public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewHolder viewHolder;
+    public View getView(int position, final View convertView, ViewGroup parent) {
+       /* View view = convertView;
+       
         if (convertView == null) {
             convertView = LayoutInflater.from(mContext).inflate(R.layout.collect_item, null);
-            viewHolder = new ViewHolder(convertView);
-            convertView.setTag(viewHolder);
-            /*viewHolder.imageView=(ImageView)convertView.findViewById(R.id.img_show);*/
+            v = new ViewHolder(convertView);
+            convertView.setTag(v);
+            *//*viewHolder.imageView=(ImageView)convertView.findViewById(R.id.img_show);*//*
         } else {
-            viewHolder = (ViewHolder) convertView.getTag();
+            v = (ViewHolder) convertView.getTag();
+        } */
+        View view = convertView;
+        if (view == null) {
+            LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+            view = li.inflate(R.layout.collect_item, null);
+        } else {
+            view = convertView;
         }
-        viewHolder.editText.setOnTouchListener(this);
-        viewHolder.editText.setOnFocusChangeListener(this);
-        viewHolder.editText.setTag(position);
+        v = new ViewHolder();
+        v.imageView = (ImageView) view.findViewById(R.id.img_show);
+        v.clickImage = (ImageButton) view.findViewById(R.id.capture);
+        v.clickImage = (ImageButton) view.findViewById(R.id.capture);
+        v.removeImage = (ImageButton) view.findViewById(R.id.cancel);
+        v.label=(EditText)view.findViewById(R.id.describe);
+        v.label.setOnTouchListener(this);
+        v.label.setOnFocusChangeListener(this);
+        v.label.setTag(position);
+        //set data in listview
+        final GetSet dataSet = (GetSet) data.get(position);
+        dataSet.setListItemPosition(position);
+        if (!dataSet.isHaveImage()) {
+            Bitmap icon = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
+            v.imageView.setImageBitmap(icon);
+        } else {
+            v.imageView.setImageBitmap(dataSet.getImage());
 
-        if (selectedEditTextPosition != -1 && position == selectedEditTextPosition) {
-            viewHolder.editText.requestFocus();
-        } else {
-            viewHolder.editText.clearFocus();
         }
-        String describe = mlist.get(position).getDescribe();
-        viewHolder.editText.setText(describe);
-        viewHolder.editText.setSelection(viewHolder.editText.length());
+        v.label.setText(dataSet.getLabel().toString());
+        if (dataSet.isStatus()) {
+            v.clickImage.setVisibility(View.VISIBLE);
+            v.removeImage.setVisibility(View.GONE);
+
+        } else {
+            v.removeImage.setVisibility(View.VISIBLE);
+            v.clickImage.setVisibility(View.GONE);
+        }
+        v.clickImage.setFocusable(false);
+        v.removeImage.setFocusable(false);
+        v.clickImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                //call parent method of activity to click image
+                (()mContext).captureImage(dataSet.getListItemPosition(),dataSet.getLabel().toString());
+            }
+        });
+        v.removeImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                dataSet.setStatus(true);
+                dataSet.setHaveImage(false);
+                notifyDataSetChanged();
+            }
+        });
+        if (selectedlabelPosition != -1 && position == selectedlabelPosition) {
+            v.label.requestFocus();
+        } else {
+            v.label.clearFocus();
+        }
+        EditText label = data.get(position).getLabel();
+        v.label.setText(label.getText());
+        v.label.setSelection(v.label.length());
 
         convertView.setTag(R.id.item_root, position);//应该在这里让convertView绑定
         convertView.setOnClickListener(this);
         convertView.setOnLongClickListener(this);
 
-        return convertView;
+        return view;
     }
+    public void setImageInItem(int position, Bitmap imageSrc, String imagePath) {
+        GetSet dataSet = (GetSet) data.get(position);
+        dataSet.setImage(imageSrc);
+        dataSet.setStatus(false);
+        dataSet.setHaveImage(true);
+        notifyDataSetChanged();
+    }
+
     /*public void updateData(int position,String path){
-        Pictures ptest = mlist.get(position);
+        GetSet ptest = data.get(position);
         ptest.setPath(path);
         ptest.setImageCaptured(true);
-        mlist.set(position,ptest);
+        data.set(position,ptest);
         notifyDataSetChanged();
     }*/
     private TextWatcher textWatcher = new MyTextWatcher() {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
-            if (selectedEditTextPosition != -1) {
-                Log.w("MyEdiAdapter", "onTextPosition" + selectedEditTextPosition
+            if (selectedlabelPosition != -1) {
+                Log.w("MyEdiAdapter", "onTextPosition" + selectedlabelPosition
                 );
-                Pictures pictures = (Pictures) getItem(selectedEditTextPosition);
-                pictures.setDescribe(s.toString());
+                GetSet getSet = (GetSet) getItem(selectedlabelPosition);
+                getSet.setLabel((EditText)s);
             }
         }
     };
@@ -119,20 +188,20 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     @Override
     public boolean onTouch(View view, MotionEvent motionEvent) {
         if (motionEvent.getAction() == motionEvent.ACTION_UP) {
-            EditText editText = (EditText) view;
-            selectedEditTextPosition = (int) editText.getTag();
+            EditText label = (EditText) view;
+            selectedlabelPosition = (int) label.getTag();
         }
         return false;
     }
 
     @Override
     public void onFocusChange(View view, boolean hasFocus) {
-        EditText editText = (EditText) view;
+        EditText label = (EditText) view;
         if (hasFocus) {
-            editText.addTextChangedListener(textWatcher);
+            label.addTextChangedListener(textWatcher);
 
         } else {
-            editText.removeTextChangedListener(textWatcher);
+            label.removeTextChangedListener(textWatcher);
         }
 
 

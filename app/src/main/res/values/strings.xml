@@ -5,5 +5,9 @@
     <string name="custom_info_contents">Custom info contents</string>
     <string name="custom_info_window">Custom info window</string>
     <string name="default_info_window">Default info window</string>
-
+    <string-array name="imageFor">
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+    </string-array>
 </resources>

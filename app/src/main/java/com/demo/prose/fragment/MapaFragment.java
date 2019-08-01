@@ -78,7 +78,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     private LatLng mLatlng;
     private EditText latView, lngView, xView, yView;
     private int x, y;
-    UiSettings uiSettings=aMap.getUiSettings();
+
      //   UiSettings.setScrollGesturesEnabled(true);
     @Override
     protected View initView() {
@@ -92,6 +92,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
         }
         setUpMap();
         BPoint();
+        BLine();
 
 
         onResume();
@@ -397,6 +398,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
     /*                                线                                         */
     private void BLine() {
+        final UiSettings uiSettings=aMap.getUiSettings();
         btn_line = (Button) view.findViewById(R.id.btn_line);
         final List<LatLng> mTrackLatlngList = new ArrayList<>();
 
