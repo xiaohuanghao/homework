@@ -132,7 +132,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
             @Override
             public void onClick(View view) {
                 //call parent method of activity to click image
-                (()mContext).captureImage(dataSet.getListItemPosition(),dataSet.getLabel().toString());
+                (()).captureImage(dataSet.getListItemPosition(),dataSet.getLabel().toString());
             }
         });
         v.removeImage.setOnClickListener(new View.OnClickListener() {
