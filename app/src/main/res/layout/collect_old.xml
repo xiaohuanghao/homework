@@ -3,7 +3,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     >
-
+<!--
     <Button
         android:id="@+id/btn_start"
         android:layout_width="match_parent"
@@ -24,7 +24,7 @@
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="0dp"
-        android:layout_marginLeft="0dp"></ListView>
+        android:layout_marginLeft="0dp"></ListView>-->
 
 </RelativeLayout>
 

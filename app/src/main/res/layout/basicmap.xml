@@ -14,14 +14,16 @@
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_margin="10dp"
-        android:layout_alignParentRight="true"
-        android:layout_alignTop="@id/map">
+        android:layout_alignParentLeft="true"
+        android:layout_alignTop="@id/map"
+        >
+
         <Button
             android:id="@+id/btn_point"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="center"
             android:layout_weight="0.5"
+            android:gravity="center"
             android:text="绘制点" />
         <Button
             android:id="@+id/btn_line"

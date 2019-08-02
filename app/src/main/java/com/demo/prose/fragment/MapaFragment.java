@@ -78,6 +78,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     private LatLng mLatlng;
     private EditText latView, lngView, xView, yView;
     private int x, y;
+    private boolean isOver=false;
 
      //   UiSettings.setScrollGesturesEnabled(true);
     @Override
@@ -97,6 +98,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
         onResume();
         onPause();
+
         deactivate();
         return view;
     }
@@ -369,8 +371,30 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     private void BPoint() {
         btn_point = (Button) view.findViewById(R.id.btn_point);
         btn_point.setOnClickListener(new View.OnClickListener() {
+
             @Override
             public void onClick(View view) {
+                switch (view.getId()) {
+
+                    /*清空地图上所有已经标注的marker*/
+
+                    case R.id.clearMap:
+                        if (aMap != null) {
+                            aMap.clear();
+                        }
+                        break;
+
+                    /*重新标注所有的marker
+                     */
+                    case R.id.resetMap:
+                        if (aMap != null) {
+                            aMap.clear();
+                            addMarkersToMap();
+                        }
+                        break;
+                    default:
+                        break;
+                }
                 aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng point) {
@@ -399,16 +423,19 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     /*                                线                                         */
     private void BLine() {
         final UiSettings uiSettings=aMap.getUiSettings();
+
         btn_line = (Button) view.findViewById(R.id.btn_line);
         final List<LatLng> mTrackLatlngList = new ArrayList<>();
 
-        btn_point.setOnClickListener(new View.OnClickListener() {
+        btn_line.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
                 aMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
                     @Override
                     public void onTouch(MotionEvent motionEvent) {
-                        if (!aMap.getUiSettings().isScrollGesturesEnabled())
+                        if (!isOver&&!aMap.getUiSettings().isScrollGesturesEnabled())
+                            Toast.makeText(getContext(), "Bline被点击了", Toast.LENGTH_SHORT).show();
                         //地图不能移动的时候再画线 gustures 手势
                         {
                             switch (motionEvent.getAction()) {
@@ -436,8 +463,8 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                     //自动首尾相连
                                     mTrackLatlngList.add(latLngStart);
                                     btn_line.setVisibility(View.GONE);
-                                    //btn_cancle.setVisibility(View.VISIBLE);
-                                    //isOver=true;
+                                   //btn_cancle.setVisibility(View.VISIBLE);
+                                    isOver=true;
                                     aMap.showMapText(true);
                                     uiSettings.setScrollGesturesEnabled(true);
 
@@ -458,11 +485,12 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                     addAreaLable(areaStr, midpoint);*/
                                     break;
 
+                                }
                             }
 
                         }
 
-                    }
+
                 });
 
             }

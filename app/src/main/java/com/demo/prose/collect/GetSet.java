@@ -3,12 +3,11 @@ package com.demo.prose.collect;
 import android.graphics.Bitmap;
 import android.view.View;
 import android.widget.Button;
-import android.widget.EditText;
 
 
 public class GetSet {
 
-    EditText label;
+    String label;
     Bitmap image;
     String subtext;
     boolean status;
@@ -19,7 +18,7 @@ public class GetSet {
     public GetSet() {
     }
 
-    public GetSet(EditText label, Bitmap image) {
+    public GetSet(String label, Bitmap image) {
         this.label = label;
         this.image = image;
 
@@ -45,11 +44,11 @@ public class GetSet {
         this.haveImage = haveImage;
     }
 
-    public EditText getLabel() {
+    public String getLabel() {
         return label;
     }
 
-    public void setLabel(EditText label) {
+    public void setLabel(String label) {
         this.label = label;
     }
 
@@ -79,13 +78,15 @@ public class GetSet {
 
     @Override
     public String toString() {
-        return "Pictures{" +
-                "label='" + label + '\'' +
+        return "GetSet{" +
+                "label=" + label +
                 ", image=" + image +
                 ", subtext='" + subtext + '\'' +
                 ", status=" + status +
+                ", listItemPosition=" + listItemPosition +
+                ", imageSrc='" + imageSrc + '\'' +
+                ", uid='" + uid + '\'' +
+                ", haveImage=" + haveImage +
                 '}';
     }
-
-
 }

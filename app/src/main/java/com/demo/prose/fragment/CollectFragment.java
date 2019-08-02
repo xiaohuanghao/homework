@@ -17,6 +17,7 @@ import android.util.Base64;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 
 import com.demo.prose.R;
@@ -28,6 +29,7 @@ import com.demo.prose.collect.GetSet;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
 
 import static android.view.View.inflate;
 
@@ -49,17 +51,18 @@ public class CollectFragment extends BaseFragment {
 
     @Override
     protected View initView() {
-        view=View.inflate(mContext, R.layout.collect,null);
-        listView=(ListView)view.findViewById(R.id.captureList);
+        view = View.inflate(mContext, R.layout.collect, null);
+        listView = (ListView) view.findViewById(R.id.captureList);
 
         //准备数据
+        List<GetSet>list=new ArrayList<>();
         getSets = new ArrayList<GetSet>();
         imageFor = getResources().getStringArray(R.array.imageFor);
         for (int i = 0; i < 3; i++) {
             GetSet inflate = new GetSet();
             //Global Values
             inflate.setUid(String.valueOf(i));
-            //inflate.setLabel();
+            inflate.setLabel(getContext().toString());//不知道填什么,先填一个能用的
             inflate.setHaveImage(false);
             inflate.setSubtext(imageFor[i]);
             inflate.setStatus(true);
@@ -67,15 +70,45 @@ public class CollectFragment extends BaseFragment {
             getSets.add(inflate);
 
         }
-        pAdapter = new PAdapter(getSets, getContext());
-        listView.setAdapter(pAdapter);
+
+        init();
+        addData();
 
         return view;
+    }
+
+    public void addData() {
+        //准备数据
+        getSets = new ArrayList<GetSet>();
+        imageFor = getResources().getStringArray(R.array.imageFor);
+        for (int i = 0; i < 3; i++) {
+            GetSet inflate = new GetSet();
+            //Global Values
+            inflate.setUid(String.valueOf(i));
+            //   inflate.setLabel();
+            inflate.setHaveImage(false);
+            inflate.setSubtext(imageFor[i]);
+            inflate.setStatus(true);
+
+            getSets.add(inflate);
+            Toast.makeText(getContext(), "addData", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void init() {
+        PAdapter pAdapter = new PAdapter(getSets, getActivity());
+        listView.setAdapter(pAdapter);
     }
     /**
      * Capture Image and save into database
      */
-
+    public void captureImage(int pos, String imageName) {
+        position = pos;
+        imageTempName = imageName;
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        startActivityForResult(intent, 100);
+        Toast.makeText(getContext(), "capture", Toast.LENGTH_SHORT).show();
+    }
 
     /**
      * Set capture image to database and set to image preview
@@ -88,10 +121,11 @@ public class CollectFragment extends BaseFragment {
         //call this method to get the uri from the bitmap
         Uri tempUri = getImageUri(getContext(), imageBitmap, imageTempName);
         String picturePath = getRealPathFromURI(tempUri);
-       pAdapter.setImageInItem(position, imageBitmap, picturePath);
-
+        pAdapter.setImageInItem(position, imageBitmap, picturePath);
+        Toast.makeText(getContext(), "onCaptureImageResult", Toast.LENGTH_SHORT).show();
 
     }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -108,17 +142,19 @@ public class CollectFragment extends BaseFragment {
         int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
         return cursor.getString(idx);
     }
+
     public Uri getImageUri(Context inContext, Bitmap inImage, String imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
         inImage.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, imageName, null);
         return Uri.parse(path);
     }
-    public Bitmap convertSrcToBitMap(String imageSrc){
-        Bitmap myBitmap=null;
-        File imgFile=new File(imageSrc);
-        if(imgFile.exists()){
-            myBitmap= BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+
+    public Bitmap convertSrcToBitMap(String imageSrc) {
+        Bitmap myBitmap = null;
+        File imgFile = new File(imageSrc);
+        if (imgFile.exists()) {
+            myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
         }
         return myBitmap;
     }

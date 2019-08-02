@@ -34,8 +34,8 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     ViewHolder v;
 
     static class ViewHolder {
-        public ImageView imageView;
-        public EditText label;
+        ImageView imageView;
+        EditText label;
         ImageButton clickImage, removeImage;
         Button buttonUpload;
 
@@ -80,7 +80,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
 
 
     //返回指定下标所对应的item的view对象
-    public View getView(int position, final View convertView, ViewGroup parent) {
+    public View getView(int position,  View convertView, ViewGroup parent) {
        /* View view = convertView;
        
         if (convertView == null) {
@@ -99,16 +99,15 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
             view = convertView;
         }
         v = new ViewHolder();
-        v.imageView = (ImageView) view.findViewById(R.id.img_show);
-        v.clickImage = (ImageButton) view.findViewById(R.id.capture);
+        v.imageView = (ImageView) view.findViewById(R.id.show);
         v.clickImage = (ImageButton) view.findViewById(R.id.capture);
         v.removeImage = (ImageButton) view.findViewById(R.id.cancel);
-        v.label=(EditText)view.findViewById(R.id.describe);
+        v.label=view.findViewById(R.id.describe);
         v.label.setOnTouchListener(this);
         v.label.setOnFocusChangeListener(this);
         v.label.setTag(position);
         //set data in listview
-        final GetSet dataSet = (GetSet) data.get(position);
+    final   GetSet dataSet = (GetSet) data.get(position);
         dataSet.setListItemPosition(position);
         if (!dataSet.isHaveImage()) {
             Bitmap icon = BitmapFactory.decodeResource(mContext.getResources(), R.mipmap.ic_launcher);
@@ -131,8 +130,13 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
         v.clickImage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+
+                Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+                mContext.startActivity(intent);
+               // mContext.startActivityForResult(intent, 100);
+
                 //call parent method of activity to click image
-                (()).captureImage(dataSet.getListItemPosition(),dataSet.getLabel().toString());
+                //((CollectFragment)mContext).captureImage(dataSet.getListItemPosition(),dataSet.getLabel().toString());
             }
         });
         v.removeImage.setOnClickListener(new View.OnClickListener() {
@@ -148,13 +152,13 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
         } else {
             v.label.clearFocus();
         }
-        EditText label = data.get(position).getLabel();
-        v.label.setText(label.getText());
+       String text=data.get(position).getLabel();
+        v.label.setText(text);
         v.label.setSelection(v.label.length());
 
-        convertView.setTag(R.id.item_root, position);//应该在这里让convertView绑定
-        convertView.setOnClickListener(this);
-        convertView.setOnLongClickListener(this);
+        view.setTag(R.id.item_root, position);//应该在这里让convertView绑定
+        view.setOnClickListener(this);
+        view.setOnLongClickListener(this);
 
         return view;
     }
@@ -173,6 +177,8 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
         data.set(position,ptest);
         notifyDataSetChanged();
     }*/
+    //ListView套用EditText完美解决方案
+    // https://blog.csdn.net/qiantanlong/article/details/77839925
     private TextWatcher textWatcher = new MyTextWatcher() {
         @Override
         public void onTextChanged(CharSequence s, int start, int before, int count) {
@@ -180,7 +186,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
                 Log.w("MyEdiAdapter", "onTextPosition" + selectedlabelPosition
                 );
                 GetSet getSet = (GetSet) getItem(selectedlabelPosition);
-                getSet.setLabel((EditText)s);
+                getSet.setLabel(s.toString());
             }
         }
     };
