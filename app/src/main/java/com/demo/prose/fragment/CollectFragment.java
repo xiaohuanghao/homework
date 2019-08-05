@@ -55,6 +55,27 @@ public class CollectFragment extends BaseFragment {
         listView = (ListView) view.findViewById(R.id.captureList);
 
         //准备数据
+      List<GetSet>list=new ArrayList<>();
+        getSets = new ArrayList<GetSet>();
+        imageFor = getResources().getStringArray(R.array.imageFor);
+        for (int i = 0; i <3 ; i++) {
+            GetSet inflate = new GetSet();
+            //Global Values
+            inflate.setUid(String.valueOf(i));
+            inflate.setLabel("");//不知道参数填什么,先填了一个肯定能运行的getContext().toString()
+            inflate.setHaveImage(false);
+            inflate.setSubtext(imageFor[i]);
+            inflate.setStatus(true);
+            getSets.add(inflate);
+        }
+        init();
+
+
+        return view;
+    }
+
+    private void addData() {
+        //准备数据
         List<GetSet>list=new ArrayList<>();
         getSets = new ArrayList<GetSet>();
         imageFor = getResources().getStringArray(R.array.imageFor);
@@ -62,30 +83,7 @@ public class CollectFragment extends BaseFragment {
             GetSet inflate = new GetSet();
             //Global Values
             inflate.setUid(String.valueOf(i));
-            inflate.setLabel(getContext().toString());//不知道填什么,先填一个能用的
-            inflate.setHaveImage(false);
-            inflate.setSubtext(imageFor[i]);
-            inflate.setStatus(true);
-
-            getSets.add(inflate);
-
-        }
-
-        init();
-        addData();
-
-        return view;
-    }
-
-    public void addData() {
-        //准备数据
-        getSets = new ArrayList<GetSet>();
-        imageFor = getResources().getStringArray(R.array.imageFor);
-        for (int i = 0; i < 3; i++) {
-            GetSet inflate = new GetSet();
-            //Global Values
-            inflate.setUid(String.valueOf(i));
-            //   inflate.setLabel();
+           //  inflate.setLabel(getText());
             inflate.setHaveImage(false);
             inflate.setSubtext(imageFor[i]);
             inflate.setStatus(true);
@@ -115,11 +113,11 @@ public class CollectFragment extends BaseFragment {
      *
      * @param data
      */
-    private void onCaptureImageResult(Intent data) {
+    public void onCaptureImageResult(Intent data) {
         Bundle extras = data.getExtras();
         Bitmap imageBitmap = (Bitmap) extras.get("data");
         //call this method to get the uri from the bitmap
-        Uri tempUri = getImageUri(getContext(), imageBitmap, imageTempName);
+        Uri tempUri = getImageUri(mContext.getApplicationContext(), imageBitmap, imageTempName);
         String picturePath = getRealPathFromURI(tempUri);
         pAdapter.setImageInItem(position, imageBitmap, picturePath);
         Toast.makeText(getContext(), "onCaptureImageResult", Toast.LENGTH_SHORT).show();
@@ -137,7 +135,7 @@ public class CollectFragment extends BaseFragment {
     }
 
     private String getRealPathFromURI(Uri uri) {
-        Cursor cursor = getContext().getContentResolver().query(uri, null, null, null, null);
+        Cursor cursor =mContext.getContentResolver().query(uri, null, null, null, null);
         cursor.moveToFirst();
         int idx = cursor.getColumnIndex(MediaStore.Images.ImageColumns.DATA);
         return cursor.getString(idx);
@@ -145,7 +143,7 @@ public class CollectFragment extends BaseFragment {
 
     public Uri getImageUri(Context inContext, Bitmap inImage, String imageName) {
         ByteArrayOutputStream bytes = new ByteArrayOutputStream();
-        inImage.compress(Bitmap.CompressFormat.JPEG, 90, bytes);
+        inImage.compress(Bitmap.CompressFormat.JPEG, 200, bytes);
         String path = MediaStore.Images.Media.insertImage(inContext.getContentResolver(), inImage, imageName, null);
         return Uri.parse(path);
     }

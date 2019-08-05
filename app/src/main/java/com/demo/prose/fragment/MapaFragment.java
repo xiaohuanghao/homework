@@ -369,6 +369,10 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     }
 
     private void BPoint() {
+        if (aMap != null) {
+            aMap.clear();
+            addMarkersToMap();
+        }
         btn_point = (Button) view.findViewById(R.id.btn_point);
         btn_point.setOnClickListener(new View.OnClickListener() {
 
@@ -378,7 +382,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
 
                     /*清空地图上所有已经标注的marker*/
 
-                    case R.id.clearMap:
+                    case R.id.btn_point:
                         if (aMap != null) {
                             aMap.clear();
                         }
@@ -398,7 +402,8 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                 aMap.setOnMapClickListener(new AMap.OnMapClickListener() {
                     @Override
                     public void onMapClick(LatLng point) {
-                        Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
+
+                            Toast.makeText(getContext(), "addPointToMap被点击了", Toast.LENGTH_SHORT).show();
                         mLocMarker = aMap.addMarker(new MarkerOptions().position(point));
                         markerList.add(mLocMarker);
                         if (mLocMarker != null) {
@@ -423,14 +428,25 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
     /*                                线                                         */
     private void BLine() {
         final UiSettings uiSettings=aMap.getUiSettings();
-
+        if (aMap != null) {
+            aMap.clear();
+            addMarkersToMap();
+        }
         btn_line = (Button) view.findViewById(R.id.btn_line);
         final List<LatLng> mTrackLatlngList = new ArrayList<>();
 
         btn_line.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                switch (view.getId()) {
 
+                    /*清空地图上所有已经标注的marker*/
+
+                    case R.id.btn_point:
+                        if (aMap != null) {
+                            aMap.clear();
+                        }
+                        break;}
                 aMap.setOnMapTouchListener(new AMap.OnMapTouchListener() {
                     @Override
                     public void onTouch(MotionEvent motionEvent) {
@@ -462,11 +478,11 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                 case MotionEvent.ACTION_UP:
                                     //自动首尾相连
                                     mTrackLatlngList.add(latLngStart);
-                                    btn_line.setVisibility(View.GONE);
+                                    btn_line.setVisibility(View.VISIBLE);
                                    //btn_cancle.setVisibility(View.VISIBLE);
                                     isOver=true;
                                     aMap.showMapText(true);
-                                    uiSettings.setScrollGesturesEnabled(true);
+                                    uiSettings.setScrollGesturesEnabled(false);
 
                                     Toast.makeText(getContext(),"绘制完成",Toast.LENGTH_SHORT).show();
                                     //自动收尾相连

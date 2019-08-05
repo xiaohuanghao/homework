@@ -23,13 +23,13 @@
 
         <EditText
             android:id="@+id/describe"
-            android:layout_width="wrap_content"
+            android:layout_width="50pt"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:paddingTop="15px"
+            android:paddingTop="15dp"
             android:singleLine="true"
-            android:textColor="#fff"
-            android:textSize="20dp" />
+            android:textColor="@color/black"
+            android:textSize="15dp" />
     </LinearLayout>
 
     <ImageButton

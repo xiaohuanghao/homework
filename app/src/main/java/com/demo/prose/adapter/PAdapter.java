@@ -63,7 +63,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     @Override
     public int getCount() {
         Log.e("TAG", "getCount()");
-        return data.size();
+       return data.size();
     }
 
     //listview
@@ -217,7 +217,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     public void onClick(View view) {
         if (view.getId() == R.id.item_root) {
             int position = (int) view.getTag(R.id.item_root);
-            Toast.makeText(mContext,"点击第"+position+"个item",Toast.LENGTH_SHORT).show();
+            Toast.makeText(mContext,"点击第"+(position+1)+"个item",Toast.LENGTH_SHORT).show();
         }
     }
 
@@ -225,7 +225,7 @@ public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.
     public boolean onLongClick(View view) {
         if (view.getId() == R.id.item_root) {
             int position = (int) view.getTag(R.id.item_root);
-            Toast.makeText(mContext,"点击第"+position+"个item",Toast.LENGTH_SHORT).show();}
+            Toast.makeText(mContext,"点击第"+(position+1)+"个item",Toast.LENGTH_SHORT).show();}
         return false;
     }
 
