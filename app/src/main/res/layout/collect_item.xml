@@ -1,25 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
-
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@id/item_root"
-    android:orientation="horizontal"
-    android:layout_width="match_parent"
-    android:weightSum="3"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
     android:layout_height="wrap_content">
 
-    <ImageView
-        android:id="@+id/show"
-        android:layout_width="75dp"
-        android:layout_weight=".4"
-        android:layout_height="75dp" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:id="@id/item_root"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
         android:layout_marginLeft="@dimen/activity_horizontal_margin"
         android:layout_weight="1.9"
-        android:orientation="vertical"
+        android:orientation="horizontal"
         android:paddingLeft="0dp">
+
+        <ImageView
+            android:id="@+id/show"
+            android:layout_width="75dp"
+            android:layout_height="75dp"
+            android:layout_weight=".4" />
 
         <EditText
             android:id="@+id/describe"
@@ -30,39 +28,18 @@
             android:singleLine="true"
             android:textColor="@color/black"
             android:textSize="15dp" />
+
+        <ImageButton
+            android:id="@+id/cancel"
+            android:layout_width="32dp"
+            android:layout_height="32dp"
+            android:layout_gravity="center_vertical"
+            android:layout_margin="@dimen/activity_horizontal_margin"
+            android:layout_weight=".33"
+            android:background="@null"
+            android:focusable="false"
+            android:src="@android:drawable/ic_menu_close_clear_cancel"
+            android:visibility="gone" />
     </LinearLayout>
 
-    <ImageButton
-        android:id="@+id/capture"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:layout_gravity="center_vertical"
-        android:background="@null"
-        android:src="@android:drawable/ic_menu_camera"
-        android:focusable="false"
-        android:layout_weight=".33"
-        android:layout_width="32dp"
-        android:layout_height="32dp" />
-
-    <ImageButton
-        android:visibility="gone"
-        android:id="@+id/cancel"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:focusable="false"
-        android:layout_gravity="center_vertical"
-        android:background="@null"
-        android:src="@android:drawable/ic_menu_close_clear_cancel"
-        android:layout_weight=".33"
-        android:layout_width="32dp"
-        android:layout_height="32dp" />
-    <Button
-        android:id="@+id/btn_upload"
-        android:layout_margin="@dimen/activity_horizontal_margin"
-        android:focusable="false"
-        android:layout_gravity="center_vertical"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
-        android:layout_weight="0.33"
-        android:text="上传" />
-
-
-</LinearLayout>
+</RelativeLayout>

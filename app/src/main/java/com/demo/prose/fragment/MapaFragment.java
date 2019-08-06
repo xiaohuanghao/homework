@@ -451,7 +451,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                     @Override
                     public void onTouch(MotionEvent motionEvent) {
                         if (!isOver&&!aMap.getUiSettings().isScrollGesturesEnabled())
-                            Toast.makeText(getContext(), "Bline被点击了", Toast.LENGTH_SHORT).show();
+                           // Toast.makeText(getContext(), "Bline被点击了", Toast.LENGTH_SHORT).show();
                         //地图不能移动的时候再画线 gustures 手势
                         {
                             switch (motionEvent.getAction()) {
@@ -470,8 +470,10 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                     if (polyline == null) {
                                         PolylineOptions mPolylineOptioins = new PolylineOptions().color(Color.RED).addAll(mTrackLatlngList);
                                         polyline = aMap.addPolyline(mPolylineOptions);
+                                        uiSettings.setScrollGesturesEnabled(false);
                                     } else {
                                         polyline.setPoints(mTrackLatlngList);
+                                        uiSettings.setScrollGesturesEnabled(false);
                                     }
                                     //画线
                                     break;
@@ -482,7 +484,7 @@ public class MapaFragment extends BaseFragment implements LocationSource, AMapLo
                                    //btn_cancle.setVisibility(View.VISIBLE);
                                     isOver=true;
                                     aMap.showMapText(true);
-                                    uiSettings.setScrollGesturesEnabled(false);
+                                    uiSettings.setScrollGesturesEnabled(true);
 
                                     Toast.makeText(getContext(),"绘制完成",Toast.LENGTH_SHORT).show();
                                     //自动收尾相连
