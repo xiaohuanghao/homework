@@ -11,6 +11,7 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -35,8 +36,11 @@ import com.demo.prose.collect.GetSet;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /*
 https://ask.csdn.net/questions/372517
@@ -48,8 +52,9 @@ public class CollectFragment extends BaseFragment {
     ArrayList<GetSet> getSets;
     ListView listView;
     ImageButton  imageButton;
-
-
+    EditText label;
+    private File currentImageFile = null;
+   ImageView img_show;
     //Temp save listItem position
     int position;
     int imageCount;
@@ -58,27 +63,31 @@ public class CollectFragment extends BaseFragment {
     ImageButton ibCapture;
     PAdapter pAdapter = new PAdapter(getSets, getActivity());
     List<GetSet> list = new ArrayList<GetSet>();
-    ArrayList<LauncherActivity.ListItem>myItems=new ArrayList<LauncherActivity.ListItem>();
+
     @Override
     protected View initView() {
         view = View.inflate(mContext, R.layout.collect, null);
         listView = (ListView) view.findViewById(R.id.captureList);
         ibCapture=(ImageButton)view.findViewById(R.id.capture);
+        img_show=(ImageView)view.findViewById(R.id.show);
+        label=(EditText) view.findViewById(R.id.describe);
         //准备数据
         List<GetSet> list = new ArrayList<GetSet>();
         getSets = new ArrayList<GetSet>();
         PAdapter pAdapter = new PAdapter(getSets,getActivity());
 
-        init();
+      addData();
 
+        init();
         pAdapter.notifyDataSetChanged();
         Button1();
         return view;
     }
 
-   /* private void addData() {
+
+    private void addData() {
         //准备数据
-        List<GetSet> list = new ArrayList<>();
+
         getSets = new ArrayList<GetSet>();
         imageFor = getResources().getStringArray(R.array.imageFor);
         for (int i = 0; i < 3; i++) {
@@ -93,9 +102,14 @@ public class CollectFragment extends BaseFragment {
             getSets.add(inflate);
             Toast.makeText(getContext(), "addData", Toast.LENGTH_SHORT).show();
         }
-    }*/
+    }
 
     private void init() {
+
+        for(int i=0;i<list.size();i++){
+            Map<ImageView,EditText>item=new HashMap<ImageView, EditText>();
+            item.put(img_show,label);
+        }
                 list.add(new GetSet());
 
         PAdapter pAdapter = new PAdapter(getSets, getActivity());
@@ -106,8 +120,20 @@ public void Button1(){
         imageButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                File file=new File(Environment.getExternalStorageDirectory(),"picture");
+                if(file.exists()){
+                    file.delete();
+                }
+                currentImageFile =new File(file,System.currentTimeMillis()+"jpg");
+                if (!currentImageFile.exists()){
+                    try {
+                        currentImageFile.createNewFile();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-
+                intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(currentImageFile));
                 startActivityForResult(intent, 100);
             }
         });
@@ -143,13 +169,19 @@ public void Button1(){
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
+       /* super.onActivityResult(requestCode, resultCode, data);
         if (resultCode != Activity.RESULT_CANCELED) {
             if (requestCode == 100) {
                 onCaptureImageResult(data);
             }
-        }
-    }
+        }*/
+        if (requestCode == Activity.DEFAULT_KEYS_DIALER) {
+//            Bundle bundle = data.getExtras();
+//            Bitmap bitmap = (Bitmap) bundle.get("data");
+//            img_show.setImageBitmap(bitmap);
+
+            img_show.setImageURI(Uri.fromFile(currentImageFile));
+    }}
 
     private String getRealPathFromURI(Uri uri) {
         Cursor cursor = mContext.getContentResolver().query(uri, null, null, null, null);
@@ -184,7 +216,7 @@ public void Button1(){
 
 
     public class PAdapter extends BaseAdapter implements View.OnTouchListener, View.OnFocusChangeListener, View.OnClickListener, View.OnLongClickListener {
-        private List<GetSet> data;
+        List<GetSet> data;
         private int selectedlabelPosition = -1;
         Context mContext;
        ViewHolder viewHolder;
@@ -239,12 +271,12 @@ public void Button1(){
             } else {
                 viewHolder = (PAdapter.ViewHolder) convertView.getTag();
             }
-        /*if (view == null) {
+        if (view == null) {
             LayoutInflater li = (LayoutInflater) mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             view = li.inflate(R.layout.collect_item, null);
         } else {
             view = convertView;
-        }*/
+        }
             viewHolder = new PAdapter.ViewHolder();
             viewHolder.imageView = (ImageView) view.findViewById(R.id.show);
             viewHolder.clickImage = (ImageButton) view.findViewById(R.id.capture);
