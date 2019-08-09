@@ -68,9 +68,9 @@ public class GetSet {
         this.subtext = subtext;
     }
 
-    public boolean isStatus() {
+  /*  public boolean isStatus() {
         return status;
-    }
+    }*/
 
     public void setStatus(boolean status) {
         this.status = status;

@@ -1,0 +1,3 @@
+ //list=data
+Bitmap imageBitmap=BitmapFactory.decodeStream(picturePath);
+img_show.setImageBitmap(imageBitmap);
